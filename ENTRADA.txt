@@ -1,0 +1,16 @@
+HOLA 
+VAR1 
+var_1 
+_var1
+435453.3456
+.4545
+00.453
+99.
+hola mundo
+>=
+num1<=num2
++
+-
+-/
+/-
+-/hola mundo/-
