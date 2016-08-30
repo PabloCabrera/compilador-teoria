@@ -37,19 +37,19 @@ ESPACIO [ \t\n]
 INICIO_COMENTARIO "-/"
 FIN_COMENTARIO "/-"
 
-RESERVADA_WRITE "(?i:WRITE)"
-RESERVADA_IF "(?i:IF)"
-RESERVADA_WHILE "(?i:WHILE)"
-RESERVADA_FLOAT "(?i:FLOAT)"
-RESERVADA_INTEGER "(?i:INTEGER)"
-RESERVADA_STRING "(?i:STRING)"
-RESERVADA_DECVAR "(?i:DECVAR)"
-RESERVADA_ENDDEC "(?i:ENDDEC)"
-RESERVADA_AVG "(?i:AVG)"
-RESERVADA_FALSE "(?i:FALSE)"
-RESERVADA_TRUE "(?i:TRUE)"
-RESERVADA_NULL "(?i:NULL)"
-RESERVADA_ELSE "(?i:ELSE)"
+RESERVADA_WRITE (W|w)(R|r)(I|i)(T|t)(E|e)
+RESERVADA_IF (I|i)(F|f)
+RESERVADA_WHILE (W|w)(H|h)(I|i)(L|l)(E|e)
+RESERVADA_FLOAT (F|f)(L|l)(O|o)(A|a)(T|t)
+RESERVADA_INTEGER (I|i)(N|n)(T|t)(E|e)(G|g)(E|e)(R|r)
+RESERVADA_STRING (S|s)(T|t)(R|r)(I|i)(N|n)(G|g)
+RESERVADA_DECVAR (D|d)(E|e)(C|c)(V|v)(A|a)(R|r)
+RESERVADA_ENDDEC (E|e)(N|n)(D|d)(D|d)(E|e)(C|c)
+RESERVADA_AVG (A|a)(V|v)(G|g)
+RESERVADA_FALSE (F|f)(A|a)(L|l)(S|s)(E|e)
+RESERVADA_TRUE (T|t)(R|r)(U|u)(E|e)
+RESERVADA_NULL (N|n)(U|u)(L|l)(L|l)
+RESERVADA_ELSE (E|e)(L|l)(S|s)(E|e)
 
 IDENTIFICADOR ({LETRA}|{GUION_BAJO})({LETRA}|{DIGITO}|{GUION_BAJO})*
 
@@ -79,6 +79,8 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 {RESERVADA_ELSE} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
 
 {IDENTIFICADOR}	{ printf("\n identificador: %s\n", yytext); }
+{OP_ASIGNACION} { printf("\n Operador asignacion: %s\n", yytext); }
+{FIN_SENTENCIA} { printf("\n Fin de sentencia: %s\n", yytext); }
 
 {CONSTANTE_REAL}	{ printf("\n Constante real: %s\n", yytext); }
 {CONSTANTE_ENTERA}	{ printf("\n Constante entera: %s\n", yytext); }

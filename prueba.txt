@@ -1,0 +1,23 @@
+DECVAR
+	saludo: String;
+	contador: Integer;
+	promedio: Float;
+	actual: Float;
+	suma: Float;
+ENDDEC
+
+saludo: "Hola mundo!";
+write (saludo);
+contador: 0;
+
+actual: 0.0;
+suma: 0;
+contador: contador+1;
+while (contador <= 92) {
+	contador: contador + 1;
+	actual: (contador/0.342) + (contador*contador);
+	suma: suma + actual;
+}
+
+write ("La suma es: ");
+write (suma);
