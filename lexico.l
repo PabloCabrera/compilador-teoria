@@ -1,11 +1,15 @@
 %option noyywrap
-
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 FILE *yyin;
 int yylval;
 char *yyltext;
+char *matriz[50][2];
+int i=1;
+FILE *fp;
+
 %}
 
 DIGITO	[0-9]
@@ -52,11 +56,9 @@ RESERVADA_NULL (N|n)(U|u)(L|l)(L|l)
 RESERVADA_ELSE (E|e)(L|l)(S|s)(E|e)
 
 IDENTIFICADOR ({LETRA}|{GUION_BAJO})({LETRA}|{DIGITO}|{GUION_BAJO})*
-
 CONSTANTE_REAL	({DIGITO}+{PUNTO_DECIMAL}{DIGITO}*)|({PUNTO_DECIMAL}{DIGITO}+)
 CONSTANTE_ENTERA	{DIGITO}+
 CONSTANTE_STRING ({COMILLA_SIMPLE}([^'])*{COMILLA_SIMPLE})|({COMILLA_DOBLE}([^"])*{COMILLA_DOBLE})
-
 OP_IGUAL ({SIMBOLO_IGUAL}{SIMBOLO_IGUAL})
 OP_MAYOR_IGUAL ({OP_MAYOR}{SIMBOLO_IGUAL})
 OP_MENOR_IGUAL ({OP_MENOR}{SIMBOLO_IGUAL})
@@ -72,21 +74,19 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 {RESERVADA_STRING} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
 {RESERVADA_DECVAR} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
 {RESERVADA_ENDDEC} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_AVG} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
+{RESERVADA_AVG} { printf("\n PALABRA RESERVADA: %s\n", yytext);}
 {RESERVADA_FALSE} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
 {RESERVADA_TRUE} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
 {RESERVADA_NULL} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
 {RESERVADA_ELSE} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
 
-{IDENTIFICADOR}	{ printf("\n identificador: %s\n", yytext); }
-{OP_ASIGNACION} { printf("\n Operador asignacion: %s\n", yytext); }
-{FIN_SENTENCIA} { printf("\n Fin de sentencia: %s\n", yytext); }
-
-{CONSTANTE_REAL}	{ printf("\n Constante real: %s\n", yytext); }
-{CONSTANTE_ENTERA}	{ printf("\n Constante entera: %s\n", yytext); }
-{CONSTANTE_STRING}	{ printf("\n Constante string: %s\n", yytext); }
-
-{OP_IGUAL} { printf("\n Operador igual: %s\n", yytext); }
+{IDENTIFICADOR}	{ printf("\n identificador: %s\n", yytext); guardar_en_ts("identificador"); }
+{OP_ASIGNACION} { printf("\n Operador asignacion: %s\n", yytext);}
+{FIN_SENTENCIA} { printf("\n Fin de sentencia: %s\n", yytext);}
+{CONSTANTE_REAL}	{ printf("\n Constante real: %s\n", yytext); guardar_en_ts("const_real");}
+{CONSTANTE_ENTERA}	{ printf("\n Constante entera: %s\n", yytext); guardar_en_ts("const_entera"); }
+{CONSTANTE_STRING}	{ printf("\n Constante string: %s\n", yytext); guardar_en_ts("const_string"); }
+{OP_IGUAL} { printf("\n Operador igual: %s\n", yytext);}
 {OP_DISTINTO} { printf("\n Operador distinto: %s\n", yytext); }
 {OP_MAYOR} { printf("\n Operador mayor: %s\n", yytext); }
 {OP_MAYOR_IGUAL} { printf("\n Operador mayor igual: %s\n", yytext); }
@@ -95,14 +95,12 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 {OP_RESTA} { printf("\n Operador resta: %s\n", yytext); }
 {OP_MULTIPLICACION} { printf("\n Operador multiplicacion: %s\n", yytext); }
 {OP_DIVISION} { printf("\n Operador division: %s\n", yytext); }
-
 {INICIO_PARENTESIS} { printf("\n Inicio parentesis: %s\n", yytext); }
 {FIN_PARENTESIS} { printf("\n Fin parentesis: %s\n", yytext); }
 {INICIO_CORCHETE} { printf("\n Inicio corchete: %s\n", yytext); }
 {FIN_CORCHETE} { printf("\n Fin corchete: %s\n", yytext); }
 {INICIO_BLOQUE} { printf("\n Inicio bloque: %s\n", yytext); }
 {FIN_BLOQUE} { printf("\n Fin bloque: %s\n", yytext); }
-
 {INICIO_COMENTARIO} { printf("\n Inicio comentario: %s\n", yytext); }
 {FIN_COMENTARIO} { printf("\n Fin comentario: %s\n", yytext); }
 {COMENTARIO} { printf("\n Comentario: %s\n", yytext); }
@@ -125,4 +123,17 @@ int yyerror(void) {
 	printf("Syntax Error\n");
 	system ("Pause");
 	exit (1);
+}
+
+void guardar_en_ts(char *s){
+	fp = fopen("tabla_simbolos.txt","a");
+	matriz[i][1]=yytext," "; /*guardo el tokens*/
+	matriz[i][2]=s,"\n"; /*guardo la regla*/
+	fprintf(fp,matriz[i][1]);
+	fprintf(fp," ");
+	fprintf(fp,matriz[i][2]);
+	fprintf(fp,"\n");
+	i++;
+	fclose ( fp );
+	return;
 }
