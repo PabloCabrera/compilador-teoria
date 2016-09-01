@@ -54,6 +54,7 @@ OP_DISTINTO ({SIMBOLO_EXCLAMACION}{SIMBOLO_IGUAL})
 COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 */
 
+//---------------------------- estructura general
 <programa> -> <prog>
 
 <prog> -> <seccion_declaracion> <seccion_sentencias> | <seccion_sentencias>
@@ -62,28 +63,39 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 
 <seccion_declaracion> -> RESERVADA_DECVAR <list_declaraciones> RESERVADA_ENDEC
 
+//---------------------------- declaraciones y sentencias
 <list_declaraciones> -> <declaracion> | <list_declaraciones> <declaracion>
-
 <decalaracion> -> IDENTIFICADOR OP_ASIGNACION <tipo>
+
 <tipo> -> RESERVADA_STRING | RESERVADA_FLOAT | RESERVADA_INTEGER | RESERVADA_BOOLEAN  
 
 <list_sentencias> -> <sent> | <list_sentencias> <sent>
 
 <sent> -> <sent_asignacion> | <sent_write> | <sent_if> |  <sent_while>
 
-<sent_asignacion> -> IDENTIFICADOR  OP_ASIGNACION  <exp>
-
-<exp> -> <exp>+<t> | <exp>-<t> | <t>
-<t> -> <t>*<f> | <t>/<f> | <f>
-<f> -> cte | <id> | INICIO_PARENTESIS <exp> FIN_PARENTESIS | <sent_avg>
-
+// write "hola mundo" ;     o write palabra ;
 <sent_write> -> RESERVADA_WRITE CONSTANTE_STRING FIN_SENTENCIA | RESERVADA_WRITE IDENTIFICADOR FIN_SENTENCIA
 
 <sent_if> -> RESERVADA_IF INICIO_PARENTESIS <condicion> FIN_PARENTESIS INICIO_BLOQUE <list_sentencias> FIN_BLOQUE
-<condicion> -> ¿?
 
 <sent_while> ->RESERVADA_WHILE INICIO_PARENTESIS <condicion> FIN_PARENTESIS INICIO_BLOQUE <list_sentencias> FIN_BLOQUE
 
+//------------------------------------ operaciones matematicas y asignaciones
+// palabra : 3*4 ;
+<sent_asignacion> -> IDENTIFICADOR  OP_ASIGNACION  <exp> FIN_SENTENCIA
+
+<exp> -> <exp> OP_SUMA <t> | <exp> OP_RESTA <t> | <t>
+
+<t> -> <t> OP_MULTIPLICACION <f> | <t> OP_DIVISION <f> | <f>
+
+<f> -> cte | <id> | INICIO_PARENTESIS <exp> FIN_PARENTESIS | <sent_avg>
+
+// avg([3,3*4,12]);
+<sent_avg> -> INICIO_PARENTESIS INICIO_CORCHETE <lista_expresiones> FIN_CORCHETE FIN_PARENTESIS FIN_SENTENCIA
+
+<lista_expresiones> -> <exp> | <lista_expresiones> COMA <exp> 
+
+// 3 < 5
 <condicion> -> <exp> <operador_comparacion> <exp>
 <operador_comparacion> -> OP_MAYOR | OP_IGUAL  | OP_DISTINTO| OP_MENOR | OP_MAYOR_IGUAL | OP_MENOR_IGUAL
 
