@@ -7,7 +7,7 @@ FILE *yyin;
 int yylval;
 char *yyltext;
 char *matriz[50][2];
-int i=1;
+int cantidad_simbolos=0;
 FILE *fp;
 
 %}
@@ -80,12 +80,12 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 {RESERVADA_NULL} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
 {RESERVADA_ELSE} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
 
-{IDENTIFICADOR}	{ printf("\n identificador: %s\n", yytext); guardar_en_ts("identificador"); }
+{IDENTIFICADOR}	{ printf("\n identificador: %s\n", yytext); guardar_en_ts("identificador", yytext); }
 {OP_ASIGNACION} { printf("\n Operador asignacion: %s\n", yytext);}
 {FIN_SENTENCIA} { printf("\n Fin de sentencia: %s\n", yytext);}
-{CONSTANTE_REAL}	{ printf("\n Constante real: %s\n", yytext); guardar_en_ts("const_real");}
-{CONSTANTE_ENTERA}	{ printf("\n Constante entera: %s\n", yytext); guardar_en_ts("const_entera"); }
-{CONSTANTE_STRING}	{ printf("\n Constante string: %s\n", yytext); guardar_en_ts("const_string"); }
+{CONSTANTE_REAL}	{ printf("\n Constante real: %s\n", yytext); guardar_en_ts("const_real", yytext);}
+{CONSTANTE_ENTERA}	{ printf("\n Constante entera: %s\n", yytext); guardar_en_ts("const_entera", yytext); }
+{CONSTANTE_STRING}	{ printf("\n Constante string: %s\n", yytext); guardar_en_ts("const_string", yytext); }
 {OP_IGUAL} { printf("\n Operador igual: %s\n", yytext);}
 {OP_DISTINTO} { printf("\n Operador distinto: %s\n", yytext); }
 {OP_MAYOR} { printf("\n Operador mayor: %s\n", yytext); }
@@ -113,9 +113,12 @@ int main(int argc,char *argv[]){
 	if ((yyin = fopen(argv[1], "rt")) == NULL)	{
 		printf("\nNo se puede abrir el archivo: %s\n", argv[1]);
 	} else {
+		fp = fopen("tabla_simbolos.txt","w");
 		yylex();
-	}
+	}	
+	fclose(fp);
 	fclose(yyin);
+	
 	return 0;
 }
 
@@ -125,15 +128,30 @@ int yyerror(void) {
 	exit (1);
 }
 
-void guardar_en_ts(char *s){
-	fp = fopen("tabla_simbolos.txt","a");
-	matriz[i][1]=yytext," "; /*guardo el tokens*/
-	matriz[i][2]=s,"\n"; /*guardo la regla*/
-	fprintf(fp,matriz[i][1]);
-	fprintf(fp," ");
-	fprintf(fp,matriz[i][2]);
-	fprintf(fp,"\n");
-	i++;
-	fclose ( fp );
-	return;
+char verificar_existencia(char *lexema){
+	int j;
+	for (j=0; j < cantidad_simbolos; j++) {
+		if (strcmp(lexema, matriz[j][0]) == 0) {
+			return 1;
+		}
+	}
+	return 0;
 }
+
+void guardar_en_ts(char *token, char *lexema){
+	if (!verificar_existencia(lexema)) {
+		char *lexema_guardado = malloc((strlen(lexema)+1)*sizeof(char));
+		strcpy(lexema_guardado, lexema);
+		
+		matriz[cantidad_simbolos][0]=lexema_guardado; /*guardo el lexema*/
+		matriz[cantidad_simbolos][1]=token; /*guardo el token*/
+	
+		fprintf(fp,matriz[cantidad_simbolos][0]);
+		fprintf(fp," ");
+		fprintf(fp,matriz[cantidad_simbolos][1]);
+		fprintf(fp,"\n");
+		cantidad_simbolos++;
+		return;
+	}
+}
+
