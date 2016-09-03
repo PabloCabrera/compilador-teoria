@@ -3,12 +3,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define LONGITUD_NO_DEFINIDA -1
+
 struct entrada {
 		char nombre[100];
 		char tipo[100];
 		char valor[100];
-		char longitud[100];
+		int longitud;
 	};
+
+
 FILE *yyin;
 int yylval;
 char *yyltext;
@@ -157,7 +162,7 @@ void guardar_en_ts(char *token, char *lexema){
 			strcpy(mis_entradas[i].nombre,lexema);
 			strcpy(mis_entradas[i].tipo,"-");
 			strcpy(mis_entradas[i].valor,"-");
-			strcpy(mis_entradas[i].longitud,"-");
+			mis_entradas[i].longitud = LONGITUD_NO_DEFINIDA;
 		}
 	
 		/* Si es una constante real guardo lexema y valor*/
@@ -165,9 +170,9 @@ void guardar_en_ts(char *token, char *lexema){
 			strcpy(destino,"_");
 			strcat(destino,lexema);
 			strcpy(mis_entradas[i].nombre,destino);
-			strcpy(mis_entradas[i].tipo,"-");
+			strcpy(mis_entradas[i].tipo,"FLOAT");
 			strcpy(mis_entradas[i].valor,lexema);
-			strcpy(mis_entradas[i].longitud,"-");
+			mis_entradas[i].longitud = LONGITUD_NO_DEFINIDA;
 		}
 	
 		/* Si es una constante entera guardo lexema y valor*/
@@ -175,19 +180,17 @@ void guardar_en_ts(char *token, char *lexema){
 			strcpy(destino,"_");
 			strcat(destino,lexema);
 			strcpy(mis_entradas[i].nombre,destino);
-			strcpy(mis_entradas[i].tipo,"-");
+			strcpy(mis_entradas[i].tipo,"INTEGER");
 			strcpy(mis_entradas[i].valor,lexema);
-			strcpy(mis_entradas[i].longitud,"-");
+			mis_entradas[i].longitud = LONGITUD_NO_DEFINIDA;
 		}
 	
 		/* Si es una constante string guardo lexema y longitud*/
 		if (strcmp(token, "const_string") == 0) {
 			strcpy(mis_entradas[i].nombre,lexema);
-			strcpy(mis_entradas[i].tipo,"-");
-			strcpy(mis_entradas[i].valor,"-");
-			char longitud[50];
-			itoa(strlen(lexema),longitud,10);
-			strcpy(mis_entradas[i].longitud,longitud);
+			strcpy(mis_entradas[i].tipo,"STRING");
+			strcpy(mis_entradas[i].valor,lexema);
+			mis_entradas[i].longitud = strlen(lexema);
 		}
 	
 		/*Guardo en el archivo*/
@@ -197,7 +200,11 @@ void guardar_en_ts(char *token, char *lexema){
 		fprintf(fp," ");
 		fprintf(fp,mis_entradas[i].valor);
 		fprintf(fp," ");
-		fprintf(fp,mis_entradas[i].longitud);
+		if (mis_entradas[i].longitud != LONGITUD_NO_DEFINIDA) {
+			fprintf(fp,"%d",mis_entradas[i].longitud);
+		} else {
+			fprintf(fp,"-");
+		}
 		fprintf(fp,"\n");
 
 		i++;
