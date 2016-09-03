@@ -3,12 +3,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+struct entrada {
+		char nombre[100];
+		char tipo[100];
+		char valor[100];
+		char longitud[100];
+	};
 FILE *yyin;
 int yylval;
 char *yyltext;
-char *matriz[50][2];
-int cantidad_simbolos=0;
 FILE *fp;
+int i=0;
+struct entrada mis_entradas[50];
 
 %}
 
@@ -130,28 +136,72 @@ int yyerror(void) {
 
 char verificar_existencia(char *lexema){
 	int j;
-	for (j=0; j < cantidad_simbolos; j++) {
-		if (strcmp(lexema, matriz[j][0]) == 0) {
+	char destino1[50];
+	strcpy(destino1,"_");
+	strcat(destino1,lexema);
+	for (j=0; j < i; j++) {
+		if ((strcmp(lexema, mis_entradas[j].nombre) == 0)||(strcmp(destino1, mis_entradas[j].nombre) == 0)) {
 			return 1;
 		}
 	}
 	return 0;
 }
 
-void guardar_en_ts(char *token, char *lexema){
-	if (!verificar_existencia(lexema)) {
-		char *lexema_guardado = malloc((strlen(lexema)+1)*sizeof(char));
-		strcpy(lexema_guardado, lexema);
-		
-		matriz[cantidad_simbolos][0]=lexema_guardado; /*guardo el lexema*/
-		matriz[cantidad_simbolos][1]=token; /*guardo el token*/
-	
-		fprintf(fp,matriz[cantidad_simbolos][0]);
-		fprintf(fp," ");
-		fprintf(fp,matriz[cantidad_simbolos][1]);
-		fprintf(fp,"\n");
-		cantidad_simbolos++;
-		return;
-	}
-}
 
+void guardar_en_ts(char *token, char *lexema){
+	char destino[50];
+	if (!verificar_existencia(lexema)) {
+	
+		/* Si es un identificador solo guardo el lexema */
+		if (strcmp(token, "identificador") == 0) {
+			strcpy(mis_entradas[i].nombre,lexema);
+			strcpy(mis_entradas[i].tipo,"-");
+			strcpy(mis_entradas[i].valor,"-");
+			strcpy(mis_entradas[i].longitud,"-");
+		}
+	
+		/* Si es una constante real guardo lexema y valor*/
+		if (strcmp(token, "const_real") == 0) {
+			strcpy(destino,"_");
+			strcat(destino,lexema);
+			strcpy(mis_entradas[i].nombre,destino);
+			strcpy(mis_entradas[i].tipo,"-");
+			strcpy(mis_entradas[i].valor,lexema);
+			strcpy(mis_entradas[i].longitud,"-");
+		}
+	
+		/* Si es una constante entera guardo lexema y valor*/
+		if (strcmp(token, "const_entera") == 0) {
+			strcpy(destino,"_");
+			strcat(destino,lexema);
+			strcpy(mis_entradas[i].nombre,destino);
+			strcpy(mis_entradas[i].tipo,"-");
+			strcpy(mis_entradas[i].valor,lexema);
+			strcpy(mis_entradas[i].longitud,"-");
+		}
+	
+		/* Si es una constante string guardo lexema y longitud*/
+		if (strcmp(token, "const_string") == 0) {
+			strcpy(mis_entradas[i].nombre,lexema);
+			strcpy(mis_entradas[i].tipo,"-");
+			strcpy(mis_entradas[i].valor,"-");
+			char longitud[50];
+			itoa(strlen(lexema),longitud,10);
+			strcpy(mis_entradas[i].longitud,longitud);
+		}
+	
+		/*Guardo en el archivo*/
+		fprintf(fp,mis_entradas[i].nombre);
+		fprintf(fp," ");
+		fprintf(fp,mis_entradas[i].tipo);
+		fprintf(fp," ");
+		fprintf(fp,mis_entradas[i].valor);
+		fprintf(fp," ");
+		fprintf(fp,mis_entradas[i].longitud);
+		fprintf(fp,"\n");
+
+		i++;
+	}
+		return;
+	
+}
