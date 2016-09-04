@@ -129,6 +129,7 @@ int main(int argc,char *argv[]){
 	}	
 	fclose(fp);
 	fclose(yyin);
+	escribir_html("tabla_simbolos.html");
 	
 	return 0;
 }
@@ -152,6 +153,52 @@ char verificar_existencia(char *lexema){
 	return 0;
 }
 
+void escribir_html(const char *nombre_archivo) {
+	FILE *file;
+	int j;
+
+	file = fopen (nombre_archivo, "w");
+	fprintf (file, 
+		"<!DOCTYPE HTML>"
+		"\n<html>"
+		"\n\t<head>"
+		"\n\t\t<title>Tabla de s&iacute;mbolos</title>"
+		"\n\t\t<style type='text/css'>"
+		"\n\t\t\ttable {border-collapse: collapse; text-align: left; border : 2px solid #4F81BD; color: black; margin: 24px auto}"
+		"\n\t\t\tth {background:#4F81BD; color: #FFFFFF; text-align: center}"
+		"\n\t\t\ttd {border: 1px solid #888888;}"
+		"\n\t\t\ttd {padding: 3px;}"
+		"\n\t\t</style>"
+		"\n\t</head>"
+		"\n\t<body>"
+		"\n\t\t<table>"
+		"\n\t\t\t<tr>"
+		"\n\t\t\t\t<th>Nombre</th>"
+		"\n\t\t\t\t<th>Tipo</th>"
+		"\n\t\t\t\t<th>Valor</th>"
+		"\n\t\t\t\t<th>Longitud</th>"
+		"\n\t\t\t</tr>"
+		"");
+
+	for (j=0; j < i ;j++) {
+		fprintf (file, "\n\t\t\t<tr>");
+		fprintf (file, "\n\t\t\t\t<td>%s</td>", mis_entradas[j].nombre);
+		fprintf (file, "\n\t\t\t\t<td>%s</td>", mis_entradas[j].tipo);
+		fprintf (file, "\n\t\t\t\t<td>%s</td>", mis_entradas[j].valor);
+		if (mis_entradas[j].longitud != LONGITUD_NO_DEFINIDA) {
+			fprintf (file, "\n\t\t\t\t<td>%d</td>", mis_entradas[j].longitud);
+		} else {
+			fprintf (file, "\n\t\t\t\t<td>-</td>", mis_entradas[j].longitud);
+		}
+		fprintf (file, "\n\t\t\t<tr>");
+	}
+	
+	fprintf (file, 
+		"\n\t</body>"
+		"\n</html>");
+	fclose (file);
+		
+}
 
 void guardar_en_ts(char *token, char *lexema){
 	char destino[50];
