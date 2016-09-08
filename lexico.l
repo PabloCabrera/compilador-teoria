@@ -237,7 +237,7 @@ void guardar_en_ts(char *token, char *lexema){
 			strcpy(mis_entradas[i].nombre,lexema);
 			strcpy(mis_entradas[i].tipo,"STRING");
 			strcpy(mis_entradas[i].valor,lexema);
-			mis_entradas[i].longitud = strlen(lexema);
+			mis_entradas[i].longitud = strlen(lexema)-2;
 		}
 	
 		/*Guardo en el archivo*/
