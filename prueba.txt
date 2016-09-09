@@ -1,3 +1,4 @@
+@
 DECVAR
 	saludo: String;
 	contador: Integer;
@@ -10,7 +11,7 @@ saludo: "Hola mundo!";
 write (saludo);
 contador: 0;
 
-actual: 0.0;
+actual: 1.5;
 suma: 0;
 contador: contador+1;
 while (contador <= 92) {
@@ -21,3 +22,5 @@ while (contador <= 92) {
 
 write ("La suma es: ");
 write (suma);
+111111111111111111.1111111111111111111111111111111111111111111111111111111111122222222222222222222222222222222222;
+12.7;

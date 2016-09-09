@@ -5,6 +5,7 @@
 #include <string.h>
 
 #define LONGITUD_NO_DEFINIDA -1
+#define MAX_TAM_LEXEMA 100
 
 struct entrada {
 		char nombre[100];
@@ -20,6 +21,7 @@ char *yyltext;
 FILE *fp;
 int i=0;
 struct entrada mis_entradas[50];
+char lex[MAX_TAM_LEXEMA]; 
 
 %}
 
@@ -94,8 +96,8 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 {IDENTIFICADOR}	{ printf("\n identificador: %s\n", yytext); guardar_en_ts("identificador", yytext); }
 {OP_ASIGNACION} { printf("\n Operador asignacion: %s\n", yytext);}
 {FIN_SENTENCIA} { printf("\n Fin de sentencia: %s\n", yytext);}
-{CONSTANTE_REAL}	{ printf("\n Constante real: %s\n", yytext); guardar_en_ts("const_real", yytext);}
-{CONSTANTE_ENTERA}	{ printf("\n Constante entera: %s\n", yytext); guardar_en_ts("const_entera", yytext); }
+{CONSTANTE_REAL}	{ printf("\n Constante real: %s\n", yytext); agregar_cte(yytext); }
+{CONSTANTE_ENTERA}	{ printf("\n Constante entera: %s\n", yytext); guardar_en_ts("const_entera",yytext); }
 {CONSTANTE_STRING}	{ printf("\n Constante string: %s\n", yytext); guardar_en_ts("const_string", yytext); }
 {OP_IGUAL} { printf("\n Operador igual: %s\n", yytext);}
 {OP_DISTINTO} { printf("\n Operador distinto: %s\n", yytext); }
@@ -124,12 +126,12 @@ int main(int argc,char *argv[]){
 	if ((yyin = fopen(argv[1], "rt")) == NULL)	{
 		printf("\nNo se puede abrir el archivo: %s\n", argv[1]);
 	} else {
-		fp = fopen("tabla_simbolos.txt","w");
+		fp = fopen("ts.txt","w");
 		yylex();
 	}	
 	fclose(fp);
 	fclose(yyin);
-	escribir_html("tabla_simbolos.html");
+	escribir_html("ts.html");
 	
 	return 0;
 }
@@ -200,6 +202,7 @@ void escribir_html(const char *nombre_archivo) {
 		
 }
 
+
 void guardar_en_ts(char *token, char *lexema){
 	char destino[50];
 	if (!verificar_existencia(lexema)) {
@@ -258,4 +261,27 @@ void guardar_en_ts(char *token, char *lexema){
 	}
 		return;
 	
+}
+
+void verificar_cota_real(char *lexema){
+	double valor;
+    valor=strtod(lex,NULL);
+	if (valor > 3.4E+38) {
+		printf (" No es un real admitido. ");
+		return;
+    }else{
+		printf(" Real admitido,voy a guardar en la ts");
+		guardar_en_ts("const_real", lexema);
+	}
+}
+
+
+
+void agregar_cte(char *lexema){
+	int len = strlen(lexema);
+	int i;
+	for(i = 0 ; i < len; i++){
+		lex[i]=lexema[i];
+	}
+		verificar_cota_real(lexema);
 }
