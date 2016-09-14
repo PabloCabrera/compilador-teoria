@@ -96,7 +96,7 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 {OP_ASIGNACION} { printf("\n Operador asignacion: %s\n", yytext);}
 {FIN_SENTENCIA} { printf("\n Fin de sentencia: %s\n", yytext);}
 {CONSTANTE_REAL}	{ printf("\n Constante real: %s\n", yytext); verificar_cota_real(yytext); }
-{CONSTANTE_ENTERA}	{ printf("\n Constante entera: %s\n", yytext); guardar_en_ts("const_entera",yytext); }
+{CONSTANTE_ENTERA}	{ printf("\n Constante entera: %s\n", yytext); verificar_cota_entera(yytext); }
 {CONSTANTE_STRING}	{ printf("\n Constante string: %s\n", yytext); guardar_en_ts("const_string", yytext); }
 {OP_IGUAL} { printf("\n Operador igual: %s\n", yytext);}
 {OP_DISTINTO} { printf("\n Operador distinto: %s\n", yytext); }
@@ -277,5 +277,15 @@ void verificar_cota_real(char *lexema){
 	}
 }
 
-
+void verificar_cota_entera(char *lexema){
+	int valor;
+	valor= atoi(lexema);
+	if ((valor > 2147483647) || (valor < 0)) {
+		printf (" No es un entero admitido.\n");
+		return;
+    }else{
+		printf(" Entero admitido,voy a guardar en la ts.\n");
+		guardar_en_ts("const_entera", lexema);
+	}
+}
 
