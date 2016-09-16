@@ -3,8 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
+#include <stdbool.h>
 
 #define LONGITUD_NO_DEFINIDA -1
+#define MAX_ENTERO "2147483647"
 
 struct entrada {
 		char nombre[100];
@@ -277,6 +279,7 @@ void verificar_cota_real(char *lexema){
 	}
 }
 
+/*
 void verificar_cota_entera(char *lexema){
 	int valor;
 	valor= atoi(lexema);
@@ -287,5 +290,42 @@ void verificar_cota_entera(char *lexema){
 		printf(" Entero admitido,voy a guardar en la ts.\n");
 		guardar_en_ts("const_entera", lexema);
 	}
+}
+*/
+void verificar_cota_entera(char *lexema){
+	/* Eliminamos los 0 a la izquierda */
+	char *lexema_trim = lexema;
+	while (lexema_trim[0] == '0') {
+		lexema_trim++;
+	}
+
+	int diferencia = strlen (MAX_ENTERO) - strlen(lexema_trim);
+	int pos = 0;
+
+	if (diferencia > 0) {
+		printf(" Entero admitido,voy a guardar en la ts.\n");
+		guardar_en_ts("const_entera", lexema_trim);
+	} else if (diferencia < 0) {
+		printf (" No es un entero admitido.\n");
+	} else /* if (diferencia == 0) */ {
+		pos = 0;
+		int continuar = true;
+		while (continuar && pos < strlen (lexema_trim)) {
+			if (MAX_ENTERO[pos] > lexema_trim[pos]) {
+				printf(" Entero admitido,voy a guardar en la ts.\n");
+				guardar_en_ts("const_entera", lexema_trim);
+				continuar = false;
+			} else if (MAX_ENTERO[pos] < lexema_trim[pos]) {
+				printf (" No es un entero admitido.\n");
+				continuar = false;
+			}
+			pos++;
+		}
+		if (continuar) {
+			printf(" Entero admitido,voy a guardar en la ts.\n");
+			guardar_en_ts("const_entera", lexema_trim);
+		}
+	}
+
 }
 
