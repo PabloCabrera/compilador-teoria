@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
+#include "y.tab.h"
 #include <stdbool.h>
+#include "compartido.h"
 
 #define LONGITUD_NO_DEFINIDA -1
 #define MAX_ENTERO "2147483647"
@@ -68,6 +70,7 @@ RESERVADA_FALSE (F|f)(A|a)(L|l)(S|s)(E|e)
 RESERVADA_TRUE (T|t)(R|r)(U|u)(E|e)
 RESERVADA_NULL (N|n)(U|u)(L|l)(L|l)
 RESERVADA_ELSE (E|e)(L|l)(S|s)(E|e)
+RESERVADA_BOOLEAN (B|b)(O|o)(O|o)(L|l)(E|e)(A|a)(N|n)
 
 IDENTIFICADOR ({LETRA}|{GUION_BAJO})({LETRA}|{DIGITO}|{GUION_BAJO})*
 CONSTANTE_REAL	({DIGITO}+{PUNTO_DECIMAL}{DIGITO}*)|({PUNTO_DECIMAL}{DIGITO}+)
@@ -80,69 +83,52 @@ OP_DISTINTO ({SIMBOLO_EXCLAMACION}{SIMBOLO_IGUAL})
 COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 
 %%
-{RESERVADA_WRITE} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_IF} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_WHILE} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_FLOAT} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_INTEGER} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_STRING} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_DECVAR} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_ENDDEC} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_AVG} { printf("\n PALABRA RESERVADA: %s\n", yytext);}
-{RESERVADA_FALSE} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_TRUE} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_NULL} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
-{RESERVADA_ELSE} { printf("\n PALABRA RESERVADA: %s\n", yytext); }
+{RESERVADA_WRITE} { return RESERVADA_WRITE; }
+{RESERVADA_IF} { return RESERVADA_IF; }
+{RESERVADA_WHILE} { return RESERVADA_WHILE; }
+{RESERVADA_FLOAT} { return RESERVADA_FLOAT;}
+{RESERVADA_INTEGER} { return RESERVADA_INTEGER; }
+{RESERVADA_STRING} { return RESERVADA_STRING; }
+{RESERVADA_DECVAR} { return RESERVADA_DECVAR; }
+{RESERVADA_ENDDEC} { return RESERVADA_ENDDEC; }
+{RESERVADA_AVG} { return RESERVADA_AVG; }
+{RESERVADA_FALSE} { return RESERVADA_FALSE; }
+{RESERVADA_TRUE} { return RESERVADA_TRUE; }
+{RESERVADA_NULL} { return RESERVADA_NULL; }
+{RESERVADA_ELSE} { return RESERVADA_ELSE; }
+{RESERVADA_BOOLEAN} { return RESERVADA_BOOLEAN; }
 
-{IDENTIFICADOR}	{ printf("\n identificador: %s\n", yytext); guardar_en_ts("identificador", yytext); }
-{OP_ASIGNACION} { printf("\n Operador asignacion: %s\n", yytext);}
-{FIN_SENTENCIA} { printf("\n Fin de sentencia: %s\n", yytext);}
-{CONSTANTE_REAL}	{ printf("\n Constante real: %s\n", yytext); verificar_cota_real(yytext); }
-{CONSTANTE_ENTERA}	{ printf("\n Constante entera: %s\n", yytext); verificar_cota_entera(yytext); }
-{CONSTANTE_STRING}	{ printf("\n Constante string: %s\n", yytext); guardar_en_ts("const_string", yytext); }
-{OP_IGUAL} { printf("\n Operador igual: %s\n", yytext);}
-{OP_DISTINTO} { printf("\n Operador distinto: %s\n", yytext); }
-{OP_MAYOR} { printf("\n Operador mayor: %s\n", yytext); }
-{OP_MAYOR_IGUAL} { printf("\n Operador mayor igual: %s\n", yytext); }
-{OP_MENOR_IGUAL} { printf("\n Operador menor igual: %s\n", yytext); }
-{OP_SUMA} { printf("\n Operador suma: %s\n", yytext); }
-{OP_RESTA} { printf("\n Operador resta: %s\n", yytext); }
-{OP_MULTIPLICACION} { printf("\n Operador multiplicacion: %s\n", yytext); }
-{OP_DIVISION} { printf("\n Operador division: %s\n", yytext); }
-{INICIO_PARENTESIS} { printf("\n Inicio parentesis: %s\n", yytext); }
-{FIN_PARENTESIS} { printf("\n Fin parentesis: %s\n", yytext); }
-{INICIO_CORCHETE} { printf("\n Inicio corchete: %s\n", yytext); }
-{FIN_CORCHETE} { printf("\n Fin corchete: %s\n", yytext); }
-{INICIO_BLOQUE} { printf("\n Inicio bloque: %s\n", yytext); }
-{FIN_BLOQUE} { printf("\n Fin bloque: %s\n", yytext); }
-{INICIO_COMENTARIO} { printf("\n Inicio comentario: %s\n", yytext); }
-{FIN_COMENTARIO} { printf("\n Fin comentario: %s\n", yytext); }
-{COMENTARIO} { printf("\n Comentario: %s\n", yytext); }
-. { printf("\n Error, el siguiente simbolo no pertenece al lexico: %s\n", yytext);}
+{IDENTIFICADOR}	{ return IDENTIFICADOR; }
+{OP_ASIGNACION} { return  OP_ASIGNACION;}
+{FIN_SENTENCIA} { return  FIN_SENTENCIA;}
+{CONSTANTE_REAL}	{ return  CONSTANTE_REAL;}
+{CONSTANTE_ENTERA}	{ return  CONSTANTE_ENTERA;}
+{CONSTANTE_STRING}	{ return  CONSTANTE_STRING;}
+{OP_IGUAL} { return  OP_IGUAL;}
+{OP_DISTINTO} { return  OP_DISTINTO;}
+{OP_MAYOR} { return  OP_MAYOR;}
+{OP_MENOR} { return  OP_MENOR;}
+{OP_MAYOR_IGUAL} { return  OP_MAYOR_IGUAL;}
+{OP_MENOR_IGUAL} { return  OP_MENOR_IGUAL;}
+{OP_SUMA} { return  OP_SUMA;}
+{OP_RESTA} { return  OP_RESTA;}
+{OP_MULTIPLICACION} { return  OP_MULTIPLICACION;}
+{OP_DIVISION} { return  OP_DIVISION;}
+{INICIO_PARENTESIS} { return  INICIO_PARENTESIS;}
+{FIN_PARENTESIS} { return  FIN_PARENTESIS;}
+{INICIO_CORCHETE} { return  INICIO_CORCHETE;}
+{FIN_CORCHETE} { return  FIN_CORCHETE;}
+{INICIO_BLOQUE} { return  INICIO_BLOQUE;}
+{FIN_BLOQUE} { return  FIN_BLOQUE;}
+{COMA} { return COMA; }
+{INICIO_COMENTARIO} { }
+{FIN_COMENTARIO} { }
+{COMENTARIO} { }
+" "
 "\n"
 "\t"
+. { printf("\n Error, el siguiente simbolo no pertenece al lexico: %s\n", yytext); yyerror();}
 %%
-
-
-int main(int argc,char *argv[]){
-	if ((yyin = fopen(argv[1], "rt")) == NULL)	{
-		printf("\nNo se puede abrir el archivo: %s\n", argv[1]);
-	} else {
-		fp = fopen("ts.txt","w");
-		yylex();
-	}	
-	fclose(fp);
-	fclose(yyin);
-	escribir_html("ts.html");
-	
-	return 0;
-}
-
-int yyerror(void) {
-	printf("Syntax Error\n");
-	system ("Pause");
-	exit (1);
-}
 
 char verificar_existencia(char *lexema){
 	int j;

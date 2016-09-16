@@ -4,10 +4,11 @@ DECVAR
 	promedio: Float;
 	actual: Float;
 	suma: Float;
+	b : boolean;
 ENDDEC
 
 saludo: "Hola mundo!";
-write (saludo);
+write saludo;
 contador: 0;
 
 actual: 1.5;
@@ -17,16 +18,35 @@ while (contador <= 92) {
 	contador: contador + 1;
 	actual: (contador/0.342) + (contador*contador);
 	suma: suma + actual;
+	avg([5]);
+	avg([5,3]);
+	avg([3,actual]);
+	avg([3,3*4,12,actual,actual*2, actual*actual]);
+
 }
 
-write ("La suma es: ");
-write (suma);
-114235555231544444444444444444444423590.5734444444444546577777777777777777667576756
-1375802347850297690938223452345098070988.128087089586587444444688888888888888884874
-2434.3254645
-123456789999876543234567898765432344444
-2147483645
-2147483648
-@
-&
-%
+write "La suma es: ";
+write suma;
+
+if (actual > 2){
+	write "2 > 3";
+}
+
+if (actual < 3){
+	if(actual >= 3){
+		write "soy true";
+	}
+	if(actual <= 3){
+		write "soy true";
+	}
+	if(actual != 3){
+		write "soy true";
+	}
+	if(actual == 3){
+		write "soy true";
+	}
+	b: false;
+	b: 1 + true;
+}else{
+	actual:333.3333;
+}
