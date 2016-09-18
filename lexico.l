@@ -5,7 +5,7 @@
 #include <conio.h>
 #include "y.tab.h"
 #include <stdbool.h>
-#include "compartido.h"
+
 
 #define LONGITUD_NO_DEFINIDA -1
 #define MAX_ENTERO "2147483647"
@@ -98,12 +98,12 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 {RESERVADA_ELSE} { return RESERVADA_ELSE; }
 {RESERVADA_BOOLEAN} { return RESERVADA_BOOLEAN; }
 
-{IDENTIFICADOR}	{ return IDENTIFICADOR; }
+{IDENTIFICADOR}	{  guardar_en_ts("identificador", yytext);  return IDENTIFICADOR;}
 {OP_ASIGNACION} { return  OP_ASIGNACION;}
 {FIN_SENTENCIA} { return  FIN_SENTENCIA;}
-{CONSTANTE_REAL}	{ return  CONSTANTE_REAL;}
-{CONSTANTE_ENTERA}	{ return  CONSTANTE_ENTERA;}
-{CONSTANTE_STRING}	{ return  CONSTANTE_STRING;}
+{CONSTANTE_REAL}	{ verificar_cota_real(yytext); return  CONSTANTE_REAL; }
+{CONSTANTE_ENTERA}	{ verificar_cota_entera(yytext); return  CONSTANTE_ENTERA;  }
+{CONSTANTE_STRING}	{ guardar_en_ts("const_string", yytext); return  CONSTANTE_STRING; }
 {OP_IGUAL} { return  OP_IGUAL;}
 {OP_DISTINTO} { return  OP_DISTINTO;}
 {OP_MAYOR} { return  OP_MAYOR;}
@@ -194,7 +194,7 @@ void escribir_html(const char *nombre_archivo) {
 void guardar_en_ts(char *token, char *lexema){
 	char destino[500];
 	if (!verificar_existencia(lexema)) {
-	
+		fp = fopen("tabla_simbolos.txt","w");
 		/* Si es un identificador solo guardo el lexema */
 		if (strcmp(token, "identificador") == 0) {
 			strcpy(mis_entradas[i].nombre,lexema);
@@ -232,6 +232,7 @@ void guardar_en_ts(char *token, char *lexema){
 			mis_entradas[i].longitud = strlen(lexema)-2;
 		}
 	
+		
 		/*Guardo en el archivo*/
 		fprintf(fp,mis_entradas[i].nombre);
 		fprintf(fp," ");
@@ -247,7 +248,10 @@ void guardar_en_ts(char *token, char *lexema){
 		fprintf(fp,"\n");
 
 		i++;
+		
 	}
+		fclose(fp);
+		escribir_html("tabla_simbolos.html");
 		return;
 	
 }
@@ -257,10 +261,8 @@ void verificar_cota_real(char *lexema){
 	double valor;
     valor=strtod(lexema,&finalPtr);
 	if (valor > 3.4E+38) {
-		printf (" No es un real admitido.\n");
 		return;
     }else{
-		printf(" Real admitido,voy a guardar en la ts.\n");
 		guardar_en_ts("const_real", lexema);
 	}
 }
@@ -270,10 +272,8 @@ void verificar_cota_entera(char *lexema){
 	int valor;
 	valor= atoi(lexema);
 	if ((valor > 2147483647) || (valor < 0)) {
-		printf (" No es un entero admitido.\n");
 		return;
     }else{
-		printf(" Entero admitido,voy a guardar en la ts.\n");
 		guardar_en_ts("const_entera", lexema);
 	}
 }
@@ -289,26 +289,21 @@ void verificar_cota_entera(char *lexema){
 	int pos = 0;
 
 	if (diferencia > 0) {
-		printf(" Entero admitido,voy a guardar en la ts.\n");
 		guardar_en_ts("const_entera", lexema_trim);
 	} else if (diferencia < 0) {
-		printf (" No es un entero admitido.\n");
 	} else /* if (diferencia == 0) */ {
 		pos = 0;
 		int continuar = true;
 		while (continuar && pos < strlen (lexema_trim)) {
 			if (MAX_ENTERO[pos] > lexema_trim[pos]) {
-				printf(" Entero admitido,voy a guardar en la ts.\n");
 				guardar_en_ts("const_entera", lexema_trim);
 				continuar = false;
 			} else if (MAX_ENTERO[pos] < lexema_trim[pos]) {
-				printf (" No es un entero admitido.\n");
 				continuar = false;
 			}
 			pos++;
 		}
 		if (continuar) {
-			printf(" Entero admitido,voy a guardar en la ts.\n");
 			guardar_en_ts("const_entera", lexema_trim);
 		}
 	}
