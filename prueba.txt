@@ -2,8 +2,7 @@ DECVAR
 	saludo: String;
 	contador: Integer;
 	promedio: Float;
-	actual: Float;
-	suma: Float;
+	actual, suma: Float;
 	b : boolean;
 ENDDEC
 

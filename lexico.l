@@ -5,25 +5,17 @@
 #include <conio.h>
 #include "y.tab.h"
 #include <stdbool.h>
+#include "ts.h"
+#include "ts.c"
 
-
-#define LONGITUD_NO_DEFINIDA -1
 #define MAX_ENTERO "2147483647"
 
-struct entrada {
-		char nombre[100];
-		char tipo[100];
-		char valor[100];
-		int longitud;
-	};
-
+/* Funciones definidas mas abajo */
+void verificar_cota_entera(char *lexema);
+void verificar_cota_real(char *lexema);
 
 FILE *yyin;
-int yylval;
 char *yyltext;
-FILE *fp;
-int i=0;
-struct entrada mis_entradas[50];
 %}
 %option noyywrap  
 %option yylineno 
@@ -86,9 +78,9 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 {RESERVADA_WRITE} { return RESERVADA_WRITE; }
 {RESERVADA_IF} { return RESERVADA_IF; }
 {RESERVADA_WHILE} { return RESERVADA_WHILE; }
-{RESERVADA_FLOAT} { return RESERVADA_FLOAT;}
-{RESERVADA_INTEGER} { return RESERVADA_INTEGER; }
-{RESERVADA_STRING} { return RESERVADA_STRING; }
+{RESERVADA_FLOAT} { yylval.stringValue="FLOAT"; return RESERVADA_FLOAT;}
+{RESERVADA_INTEGER} { yylval.stringValue="INTEGER"; return RESERVADA_INTEGER; }
+{RESERVADA_STRING} { yylval.stringValue="STRING"; return RESERVADA_STRING; }
 {RESERVADA_DECVAR} { return RESERVADA_DECVAR; }
 {RESERVADA_ENDDEC} { return RESERVADA_ENDDEC; }
 {RESERVADA_AVG} { return RESERVADA_AVG; }
@@ -96,14 +88,14 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 {RESERVADA_TRUE} { return RESERVADA_TRUE; }
 {RESERVADA_NULL} { return RESERVADA_NULL; }
 {RESERVADA_ELSE} { return RESERVADA_ELSE; }
-{RESERVADA_BOOLEAN} { return RESERVADA_BOOLEAN; }
+{RESERVADA_BOOLEAN} { yylval.stringValue="BOOLEAN";return RESERVADA_BOOLEAN; }
 
-{IDENTIFICADOR}	{  guardar_en_ts("identificador", yytext);  return IDENTIFICADOR;}
+{IDENTIFICADOR}	{  ts_guardar_simbolo("identificador", yytext);  return IDENTIFICADOR;}
 {OP_ASIGNACION} { return  OP_ASIGNACION;}
 {FIN_SENTENCIA} { return  FIN_SENTENCIA;}
 {CONSTANTE_REAL}	{ verificar_cota_real(yytext); return  CONSTANTE_REAL; }
 {CONSTANTE_ENTERA}	{ verificar_cota_entera(yytext); return  CONSTANTE_ENTERA;  }
-{CONSTANTE_STRING}	{ guardar_en_ts("const_string", yytext); return  CONSTANTE_STRING; }
+{CONSTANTE_STRING}	{ ts_guardar_simbolo("const_string", yytext); return  CONSTANTE_STRING; }
 {OP_IGUAL} { return  OP_IGUAL;}
 {OP_DISTINTO} { return  OP_DISTINTO;}
 {OP_MAYOR} { return  OP_MAYOR;}
@@ -130,131 +122,7 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 . { printf("\n Error, el siguiente simbolo no pertenece al lexico: %s\n", yytext); yyerror();}
 %%
 
-char verificar_existencia(char *lexema){
-	int j;
-	char destino1[500];
-	strcpy(destino1,"_");
-	strcat(destino1,lexema);
-	for (j=0; j < i; j++) {
-		if ((strcmp(lexema, mis_entradas[j].nombre) == 0)||(strcmp(destino1, mis_entradas[j].nombre) == 0)) {
-			return 1;
-		}
-	}
-	return 0;
-}
 
-void escribir_html(const char *nombre_archivo) {
-	FILE *file;
-	int j;
-
-	file = fopen (nombre_archivo, "w");
-	fprintf (file, 
-		"<!DOCTYPE HTML>"
-		"\n<html>"
-		"\n\t<head>"
-		"\n\t\t<title>Tabla de s&iacute;mbolos</title>"
-		"\n\t\t<style type='text/css'>"
-		"\n\t\t\ttable {border-collapse: collapse; text-align: left; border : 2px solid #4F81BD; color: black; margin: 24px auto}"
-		"\n\t\t\tth {background:#4F81BD; color: #FFFFFF; text-align: center}"
-		"\n\t\t\ttd {border: 1px solid #888888;}"
-		"\n\t\t\ttd {padding: 3px;}"
-		"\n\t\t</style>"
-		"\n\t</head>"
-		"\n\t<body>"
-		"\n\t\t<table>"
-		"\n\t\t\t<tr>"
-		"\n\t\t\t\t<th>Nombre</th>"
-		"\n\t\t\t\t<th>Tipo</th>"
-		"\n\t\t\t\t<th>Valor</th>"
-		"\n\t\t\t\t<th>Longitud</th>"
-		"\n\t\t\t</tr>"
-		"");
-
-	for (j=0; j < i ;j++) {
-		fprintf (file, "\n\t\t\t<tr>");
-		fprintf (file, "\n\t\t\t\t<td>%s</td>", mis_entradas[j].nombre);
-		fprintf (file, "\n\t\t\t\t<td>%s</td>", mis_entradas[j].tipo);
-		fprintf (file, "\n\t\t\t\t<td>%s</td>", mis_entradas[j].valor);
-		if (mis_entradas[j].longitud != LONGITUD_NO_DEFINIDA) {
-			fprintf (file, "\n\t\t\t\t<td>%d</td>", mis_entradas[j].longitud);
-		} else {
-			fprintf (file, "\n\t\t\t\t<td>-</td>", mis_entradas[j].longitud);
-		}
-		fprintf (file, "\n\t\t\t<tr>");
-	}
-	
-	fprintf (file, 
-		"\n\t</body>"
-		"\n</html>");
-	fclose (file);
-		
-}
-
-
-void guardar_en_ts(char *token, char *lexema){
-	char destino[500];
-	if (!verificar_existencia(lexema)) {
-		fp = fopen("tabla_simbolos.txt","w");
-		/* Si es un identificador solo guardo el lexema */
-		if (strcmp(token, "identificador") == 0) {
-			strcpy(mis_entradas[i].nombre,lexema);
-			strcpy(mis_entradas[i].tipo,"-");
-			strcpy(mis_entradas[i].valor,"-");
-			mis_entradas[i].longitud = LONGITUD_NO_DEFINIDA;
-		}
-	
-		/* Si es una constante real guardo lexema y valor*/
-		if (strcmp(token, "const_real") == 0) {
-			strcpy(destino,"_");
-			strcat(destino,lexema);
-			strcpy(mis_entradas[i].nombre,destino);
-			strcpy(mis_entradas[i].tipo,"FLOAT");
-			strcpy(mis_entradas[i].valor,lexema);
-			mis_entradas[i].longitud = LONGITUD_NO_DEFINIDA;
-			
-		}
-	
-		/* Si es una constante entera guardo lexema y valor*/
-		if (strcmp(token, "const_entera") == 0) {
-			strcpy(destino,"_");
-			strcat(destino,lexema);
-			strcpy(mis_entradas[i].nombre,destino);
-			strcpy(mis_entradas[i].tipo,"INTEGER");
-			strcpy(mis_entradas[i].valor,lexema);
-			mis_entradas[i].longitud = LONGITUD_NO_DEFINIDA;
-		}
-	
-		/* Si es una constante string guardo lexema y longitud*/
-		if (strcmp(token, "const_string") == 0) {
-			strcpy(mis_entradas[i].nombre,lexema);
-			strcpy(mis_entradas[i].tipo,"STRING");
-			strcpy(mis_entradas[i].valor,lexema);
-			mis_entradas[i].longitud = strlen(lexema)-2;
-		}
-	
-		
-		/*Guardo en el archivo*/
-		fprintf(fp,mis_entradas[i].nombre);
-		fprintf(fp," ");
-		fprintf(fp,mis_entradas[i].tipo);
-		fprintf(fp," ");
-		fprintf(fp,mis_entradas[i].valor);
-		fprintf(fp," ");
-		if (mis_entradas[i].longitud != LONGITUD_NO_DEFINIDA) {
-			fprintf(fp,"%d",mis_entradas[i].longitud);
-		} else {
-			fprintf(fp,"-");
-		}
-		fprintf(fp,"\n");
-
-		i++;
-		
-	}
-		fclose(fp);
-		escribir_html("tabla_simbolos.html");
-		return;
-	
-}
 
 void verificar_cota_real(char *lexema){
 	char *finalPtr;
@@ -263,21 +131,10 @@ void verificar_cota_real(char *lexema){
 	if (valor > 3.4E+38) {
 		return;
     }else{
-		guardar_en_ts("const_real", lexema);
+		ts_guardar_simbolo("const_real", lexema);
 	}
 }
 
-/*
-void verificar_cota_entera(char *lexema){
-	int valor;
-	valor= atoi(lexema);
-	if ((valor > 2147483647) || (valor < 0)) {
-		return;
-    }else{
-		guardar_en_ts("const_entera", lexema);
-	}
-}
-*/
 void verificar_cota_entera(char *lexema){
 	/* Eliminamos los 0 a la izquierda */
 	char *lexema_trim = lexema;
@@ -289,14 +146,14 @@ void verificar_cota_entera(char *lexema){
 	int pos = 0;
 
 	if (diferencia > 0) {
-		guardar_en_ts("const_entera", lexema_trim);
+		ts_guardar_simbolo("const_entera", lexema_trim);
 	} else if (diferencia < 0) {
 	} else /* if (diferencia == 0) */ {
 		pos = 0;
 		int continuar = true;
 		while (continuar && pos < strlen (lexema_trim)) {
 			if (MAX_ENTERO[pos] > lexema_trim[pos]) {
-				guardar_en_ts("const_entera", lexema_trim);
+				ts_guardar_simbolo("const_entera", lexema_trim);
 				continuar = false;
 			} else if (MAX_ENTERO[pos] < lexema_trim[pos]) {
 				continuar = false;
@@ -304,7 +161,7 @@ void verificar_cota_entera(char *lexema){
 			pos++;
 		}
 		if (continuar) {
-			guardar_en_ts("const_entera", lexema_trim);
+			ts_guardar_simbolo("const_entera", lexema_trim);
 		}
 	}
 

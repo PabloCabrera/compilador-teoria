@@ -1,14 +1,17 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <conio.h>
 #include "y.tab.h"
 
-int yylval;
 int yystopparser=0;
 FILE *yyin;
 char *yyltext;
 char *yytext;
+
+/* Funciones definidas mas adelante */
+char* concat_ids(char* lista_ids, char* ultimo_id);
 
 %}
 %token COMA
@@ -34,9 +37,9 @@ char *yytext;
 %token RESERVADA_WRITE
 %token RESERVADA_IF
 %token RESERVADA_WHILE
-%token RESERVADA_FLOAT
-%token RESERVADA_INTEGER
-%token RESERVADA_STRING
+%token <stringValue> RESERVADA_FLOAT
+%token <stringValue> RESERVADA_INTEGER
+%token <stringValue> RESERVADA_STRING
 %token RESERVADA_DECVAR
 %token RESERVADA_ENDDEC
 %token RESERVADA_AVG
@@ -44,9 +47,9 @@ char *yytext;
 %token RESERVADA_TRUE
 %token RESERVADA_NULL
 %token RESERVADA_ELSE
-%token RESERVADA_BOOLEAN
+%token <stringValue> RESERVADA_BOOLEAN
 
-%token IDENTIFICADOR
+%token <stringValue> IDENTIFICADOR
 %token CONSTANTE_REAL
 %token CONSTANTE_ENTERA
 %token CONSTANTE_STRING
@@ -54,6 +57,16 @@ char *yytext;
 %token OP_MAYOR_IGUAL
 %token OP_MENOR_IGUAL
 %token OP_DISTINTO
+
+%union
+{
+    int intValue;
+    float floatValue;
+    char *stringValue;
+}
+
+%type <stringValue> list_identificadores;
+%type <stringValue> tipo;
 
 %%
 
@@ -70,11 +83,12 @@ seccion_declaracion : RESERVADA_DECVAR {printf("INICIO SECCION DE DECLARACIONES 
 
 //---------------------------- declaraciones y sentencias;
 list_declaraciones : declaracion | list_declaraciones declaracion;
-declaracion : list_identificadores {printf("Declaracion");} OP_ASIGNACION  tipo {printf(" Tipo %s\n",yytext);} FIN_SENTENCIA;
+declaracion : list_identificadores OP_ASIGNACION  tipo  FIN_SENTENCIA {ts_establecer_tipo ($1, $3);};
 
-list_identificadores : IDENTIFICADOR | list_identificadores COMA IDENTIFICADOR;
+list_identificadores : IDENTIFICADOR {$$ = concat_ids(NULL, $1);}| list_identificadores COMA IDENTIFICADOR {$$ = concat_ids($1, $3);};
 
 tipo : RESERVADA_STRING | RESERVADA_FLOAT | RESERVADA_INTEGER | RESERVADA_BOOLEAN;
+
 
 list_sentencias : sent | list_sentencias sent ;
 
@@ -130,13 +144,31 @@ int main (int argc, char *argv[])
 	else
 	{
 		yyparse();
-	}
+		ts_escribir_html("tabla_simbolos.html");
+		}
 	fclose(yyin);
 	return(0);
 }
 int yyerror(void)
 {
-	printf("Sintax Error\n");
+	printf("Syntax Error\n");
 	system("Pause");
 	exit(1);
+}
+
+char* concat_ids(char* lista_ids, char* ultimo_id){
+	int longitud;
+	char *nueva_lista;
+
+	if (lista_ids != NULL) {
+		longitud = strlen(lista_ids) + strlen(ultimo_id) + 2;
+		nueva_lista = malloc(longitud);
+		strcpy(nueva_lista, lista_ids);
+		strcat(nueva_lista, ",");
+		strcat(nueva_lista, ultimo_id);
+		free(lista_ids); /* Borramos la lista anterior */
+		return nueva_lista;
+	} else {
+		return strdup(ultimo_id);
+	}
 }
