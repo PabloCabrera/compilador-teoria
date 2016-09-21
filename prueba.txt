@@ -1,13 +1,10 @@
 DECVAR
-	saludo: String;
 	contador: Integer;
 	promedio: Float;
 	actual, suma: Float;
-	b : boolean;
 ENDDEC
 
-saludo: "Hola mundo!";
-write saludo;
+write "Hola mundo!";
 contador: 0;
 
 actual: 1.5;
@@ -44,8 +41,7 @@ if (actual < 3){
 	if(actual == 3){
 		write "soy true";
 	}
-	b: false;
-	b: 1 + true;
+
 }else{
 	actual:333.3333;
 }

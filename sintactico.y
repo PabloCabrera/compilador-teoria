@@ -39,15 +39,11 @@ char* concat_ids(char* lista_ids, char* ultimo_id);
 %token RESERVADA_WHILE
 %token <stringValue> RESERVADA_FLOAT
 %token <stringValue> RESERVADA_INTEGER
-%token <stringValue> RESERVADA_STRING
 %token RESERVADA_DECVAR
 %token RESERVADA_ENDDEC
 %token RESERVADA_AVG
-%token RESERVADA_FALSE
-%token RESERVADA_TRUE
 %token RESERVADA_NULL
 %token RESERVADA_ELSE
-%token <stringValue> RESERVADA_BOOLEAN
 
 %token <stringValue> IDENTIFICADOR
 %token CONSTANTE_REAL
@@ -87,14 +83,14 @@ declaracion : list_identificadores OP_ASIGNACION  tipo  FIN_SENTENCIA {ts_establ
 
 list_identificadores : IDENTIFICADOR {$$ = concat_ids(NULL, $1);}| list_identificadores COMA IDENTIFICADOR {$$ = concat_ids($1, $3);};
 
-tipo : RESERVADA_STRING | RESERVADA_FLOAT | RESERVADA_INTEGER | RESERVADA_BOOLEAN;
+tipo : RESERVADA_FLOAT | RESERVADA_INTEGER;
 
 
 list_sentencias : sent | list_sentencias sent ;
 
 sent : sent_asignacion | sent_write | sent_if | sent_if_else | sent_while | sent_avg;
 
-// write "hola mundo" ;     o write palabra ;
+// write "hola mundo" ;
 sent_write : RESERVADA_WRITE CONSTANTE_STRING FIN_SENTENCIA {printf ("Sentencia Write\n");}| RESERVADA_WRITE IDENTIFICADOR FIN_SENTENCIA {printf ("Sentencia Write\n");};
 
 sent_if : RESERVADA_IF {printf("INICIO IF\n");} INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {printf("FIN IF\n");} ;
@@ -112,11 +108,7 @@ exp_mat : exp_mat OP_SUMA t {printf("Suma\n");} | exp_mat OP_RESTA t {printf("Re
 
 t : t OP_MULTIPLICACION f {printf("Multiplicacion\n");}| t OP_DIVISION f {printf("Division\n");} | f;
 
-f : CONSTANTE_STRING | RESERVADA_FALSE | RESERVADA_TRUE | CONSTANTE_REAL | CONSTANTE_ENTERA | IDENTIFICADOR | INICIO_PARENTESIS exp_mat FIN_PARENTESIS | sent_avg;
-
-//exp_string : CONSTANTE_STRING | IDENTIFICADOR; 
-
-//exp_boolean : RESERVADA_FALSE | RESERVADA_TRUE | IDENTIFICADOR;
+f : CONSTANTE_STRING | CONSTANTE_REAL | CONSTANTE_ENTERA | IDENTIFICADOR | INICIO_PARENTESIS exp_mat FIN_PARENTESIS | sent_avg;
 
 // avg([3,3*4,12]);
 sent_avg :RESERVADA_AVG INICIO_PARENTESIS INICIO_CORCHETE lista_exp_matresiones FIN_CORCHETE FIN_PARENTESIS FIN_SENTENCIA {printf("Sentencia avg\n");} ;
@@ -127,10 +119,8 @@ lista_exp_matresiones : exp_mat | lista_exp_matresiones COMA exp_mat ;
 condicion : condicion_mayor {printf("Condicion mayor\n");} | condicion_igual {printf("Condicion igual\n");}| condicion_menor {printf("Condicion menor\n");} | condicion_distinto {printf("Condicion distinto\n");} | condicion_mayor_igual {printf("Condicion mayor igual\n");} | condicion_menor_igual {printf("Condicion menor igual\n");} ;
 condicion_mayor : IDENTIFICADOR OP_MAYOR exp_mat;
 condicion_igual : IDENTIFICADOR OP_IGUAL exp_mat;
-//condicion_igual : IDENTIFICADOR OP_IGUAL exp_boolean;
 condicion_menor : IDENTIFICADOR OP_MENOR exp_mat;
 condicion_distinto : IDENTIFICADOR OP_DISTINTO exp_mat;
-//condicion_distinto : IDENTIFICADOR OP_DISTINTO exp_boolean;
 condicion_mayor_igual : IDENTIFICADOR OP_MAYOR_IGUAL exp_mat;
 condicion_menor_igual : IDENTIFICADOR OP_MENOR_IGUAL exp_mat;
 
