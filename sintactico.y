@@ -79,7 +79,7 @@ seccion_declaracion : RESERVADA_DECVAR {printf("INICIO SECCION DE DECLARACIONES 
 
 //---------------------------- declaraciones y sentencias;
 list_declaraciones : declaracion | list_declaraciones declaracion;
-declaracion : list_identificadores OP_ASIGNACION  tipo  FIN_SENTENCIA {ts_establecer_tipo ($1, $3);};
+declaracion : list_identificadores OP_ASIGNACION  tipo {printf("Declaracion tipo %s\n",yytext);} FIN_SENTENCIA {ts_establecer_tipo ($1, $3);} ;
 
 list_identificadores : IDENTIFICADOR {$$ = concat_ids(NULL, $1);}| list_identificadores COMA IDENTIFICADOR {$$ = concat_ids($1, $3);};
 
@@ -101,14 +101,13 @@ sent_while :RESERVADA_WHILE {printf("INICIO WHILE\n");} INICIO_PARENTESIS condic
 //------------------------------------ operaciones matematicas y asignaciones;
 // palabra : 3*4 ;
 sent_asignacion : IDENTIFICADOR {printf("Asignacion con identificador %s\n",yytext);} OP_ASIGNACION  exp_mat FIN_SENTENCIA ;
-//sent_asignacion : IDENTIFICADOR {printf("Identificador %s\n",yytext);} OP_ASIGNACION  exp_string  FIN_SENTENCIA ;
-//sent_asignacion : IDENTIFICADOR {printf("Identificador %s\n",yytext);} OP_ASIGNACION  exp_boolean  FIN_SENTENCIA ;
+
 
 exp_mat : exp_mat OP_SUMA t {printf("Suma\n");} | exp_mat OP_RESTA t {printf("Resta\n");} | t;
 
 t : t OP_MULTIPLICACION f {printf("Multiplicacion\n");}| t OP_DIVISION f {printf("Division\n");} | f;
 
-f : CONSTANTE_STRING | CONSTANTE_REAL | CONSTANTE_ENTERA | IDENTIFICADOR | INICIO_PARENTESIS exp_mat FIN_PARENTESIS | sent_avg;
+f : CONSTANTE_REAL | CONSTANTE_ENTERA | IDENTIFICADOR | INICIO_PARENTESIS exp_mat FIN_PARENTESIS | sent_avg;
 
 // avg([3,3*4,12]);
 sent_avg :RESERVADA_AVG INICIO_PARENTESIS INICIO_CORCHETE lista_exp_matresiones FIN_CORCHETE FIN_PARENTESIS FIN_SENTENCIA {printf("Sentencia avg\n");} ;
