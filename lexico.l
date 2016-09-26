@@ -130,7 +130,7 @@ void verificar_cota_real(char *lexema){
 void verificar_cota_entera(char *lexema){
 	/* Eliminamos los 0 a la izquierda */
 	char *lexema_trim = lexema;
-	while (lexema_trim[0] == '0') {
+	while (lexema_trim[0] == '0' && strlen (lexema_trim) > 1) {
 		lexema_trim++;
 	}
 
