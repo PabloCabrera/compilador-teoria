@@ -39,6 +39,7 @@ char* concat_ids(char* lista_ids, char* ultimo_id);
 %token RESERVADA_WHILE
 %token <stringValue> RESERVADA_FLOAT
 %token <stringValue> RESERVADA_INTEGER
+%token <stringValue> RESERVADA_STRING
 %token RESERVADA_DECVAR
 %token RESERVADA_ENDDEC
 %token RESERVADA_AVG
@@ -80,7 +81,7 @@ declaracion : list_identificadores OP_ASIGNACION  tipo {printf("Declaracion tipo
 
 list_identificadores : IDENTIFICADOR {$$ = concat_ids(NULL, $1);}| list_identificadores COMA IDENTIFICADOR {$$ = concat_ids($1, $3);};
 
-tipo : RESERVADA_FLOAT | RESERVADA_INTEGER;
+tipo : RESERVADA_FLOAT | RESERVADA_INTEGER | RESERVADA_STRING;
 
 list_sentencias : sent | list_sentencias sent ;
 

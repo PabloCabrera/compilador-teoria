@@ -2,6 +2,7 @@ DECVAR
 	contador: Integer;
 	promedio: Float;
 	actual, suma: Float;
+	palabra, sinonimo: String;
 ENDDEC
 
 write "Hola mundo!";
