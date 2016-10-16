@@ -1,0 +1,9 @@
+DECVAR
+	
+	actual: Float;
+
+ENDDEC
+	
+	actual: 1.5;
+	
+avg([3, 3*4, 12, actual, actual*2, actual*actual]);

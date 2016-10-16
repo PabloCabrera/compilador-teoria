@@ -119,9 +119,9 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 void verificar_cota_real(char *lexema){
 	char *finalPtr;
 	double valor;
-    valor=strtod(lexema,&finalPtr);
-	if (valor > 3.4E+38) {
-		return;
+    valor=strtod(lexema,&finalPtr); // convierte la cadena apuntada por el puntero a un long
+	if ((valor > 3.4E+38) || (valor <= 3.4E-38)) {
+		yyerror();
     }else{
 		ts_guardar_simbolo("const_real", lexema);
 	}
@@ -140,6 +140,7 @@ void verificar_cota_entera(char *lexema){
 	if (diferencia > 0) {
 		ts_guardar_simbolo("const_entera", lexema_trim);
 	} else if (diferencia < 0) {
+		yyerror();
 	} else /* if (diferencia == 0) */ {
 		pos = 0;
 		int continuar = true;
@@ -154,6 +155,8 @@ void verificar_cota_entera(char *lexema){
 		}
 		if (continuar) {
 			ts_guardar_simbolo("const_entera", lexema_trim);
+		}else{
+			yyerror();
 		}
 	}
 
