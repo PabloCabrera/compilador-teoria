@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
-#include "y.tab.h"
 #include <stdbool.h>
 #include "ts.h"
 #include "ts.c"
+#include "y.tab.h"
 
 #define MAX_ENTERO "2147483647"
 

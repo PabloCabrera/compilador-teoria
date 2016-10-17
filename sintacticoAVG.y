@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
+#include "ts.h"
 #include "y.tab.h"
 
 int yystopparser=0;
@@ -57,13 +58,14 @@ char* concat_ids(char* lista_ids, char* ultimo_id);
 
 %union
 {
+    TipoDato typeValue;
     int intValue;
     float floatValue;
     char *stringValue;
 }
 
 %type <stringValue> list_identificadores;
-%type <stringValue> tipo;
+%type <typeValue> tipo;
 
 %%
 
@@ -81,7 +83,7 @@ declaracion : list_identificadores OP_ASIGNACION  tipo {printf("Declaracion tipo
 
 list_identificadores : IDENTIFICADOR {$$ = concat_ids(NULL, $1);}| list_identificadores COMA IDENTIFICADOR {$$ = concat_ids($1, $3);};
 
-tipo : RESERVADA_FLOAT | RESERVADA_INTEGER | RESERVADA_STRING;
+tipo : RESERVADA_FLOAT {$$ = FLOAT;}| RESERVADA_INTEGER {$$ = INTEGER;}| RESERVADA_STRING {$$ = STRING;};
 
 list_sentencias : sent | list_sentencias sent ;
 
@@ -97,6 +99,8 @@ f : CONSTANTE_REAL | CONSTANTE_ENTERA | IDENTIFICADOR | INICIO_PARENTESIS exp_ma
 
 // avg([3,3*4,12]);
 sent_avg :RESERVADA_AVG INICIO_PARENTESIS INICIO_CORCHETE lista_exp_matresiones FIN_CORCHETE FIN_PARENTESIS FIN_SENTENCIA {printf("Sentencia avg\n");} ;
+
+lista_exp_matresiones : exp_mat | lista_exp_matresiones COMA exp_mat ;
 
 %%
 int main (int argc, char *argv[]) 

@@ -8,6 +8,13 @@
 int ts_num_simbolos=0;
 // FILE *fp;
 
+const char *TipoDato_names[4] = {
+	"Undefined",
+	"Integer",
+	"Float",
+	"String"
+};
+
 bool ts_verificar_existencia(char *lexema){
 	int j;
 	char destino1[500];
@@ -51,7 +58,7 @@ void ts_escribir_html(const char *nombre_archivo) {
 	for (j=0; j < ts_num_simbolos ;j++) {
 		fprintf (file, "\n\t\t\t<tr>");
 		fprintf (file, "\n\t\t\t\t<td>%s</td>", ts_tabla_simbolos[j].nombre);
-		fprintf (file, "\n\t\t\t\t<td>%s</td>", ts_tabla_simbolos[j].tipo);
+		fprintf (file, "\n\t\t\t\t<td>%s</td>", TipoDato_toString(ts_tabla_simbolos[j].tipo));
 		fprintf (file, "\n\t\t\t\t<td>%s</td>", ts_tabla_simbolos[j].valor);
 		if (ts_tabla_simbolos[j].longitud != TS_LONGITUD_NO_DEFINIDA) {
 			fprintf (file, "\n\t\t\t\t<td>%d</td>", ts_tabla_simbolos[j].longitud);
@@ -76,7 +83,7 @@ void ts_guardar_simbolo(char *token, char *lexema){
 		/* Si es un identificador solo guardo el lexema */
 		if (strcmp(token, "identificador") == 0) {
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].nombre,lexema);
-			strcpy(ts_tabla_simbolos[ts_num_simbolos].tipo,"-");
+			ts_tabla_simbolos[ts_num_simbolos].tipo = UNDEFINED;
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].valor,"-");
 			yylval.stringValue = ts_tabla_simbolos[ts_num_simbolos].nombre; 
 			ts_tabla_simbolos[ts_num_simbolos].longitud = TS_LONGITUD_NO_DEFINIDA;
@@ -87,7 +94,7 @@ void ts_guardar_simbolo(char *token, char *lexema){
 			strcpy(destino,"_");
 			strcat(destino,lexema);
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].nombre,destino);
-			strcpy(ts_tabla_simbolos[ts_num_simbolos].tipo,"FLOAT");
+			ts_tabla_simbolos[ts_num_simbolos].tipo = FLOAT;
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].valor,lexema);
 			ts_tabla_simbolos[ts_num_simbolos].longitud = TS_LONGITUD_NO_DEFINIDA;
 			
@@ -98,7 +105,7 @@ void ts_guardar_simbolo(char *token, char *lexema){
 			strcpy(destino,"_");
 			strcat(destino,lexema);
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].nombre,destino);
-			strcpy(ts_tabla_simbolos[ts_num_simbolos].tipo,"INTEGER");
+			ts_tabla_simbolos[ts_num_simbolos].tipo = INTEGER;
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].valor,lexema);
 			ts_tabla_simbolos[ts_num_simbolos].longitud = TS_LONGITUD_NO_DEFINIDA;
 		}
@@ -106,7 +113,7 @@ void ts_guardar_simbolo(char *token, char *lexema){
 		/* Si es una constante string guardo lexema y longitud*/
 		if (strcmp(token, "const_string") == 0) {
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].nombre,lexema);
-			strcpy(ts_tabla_simbolos[ts_num_simbolos].tipo,"STRING");
+			ts_tabla_simbolos[ts_num_simbolos].tipo=STRING;
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].valor,lexema);
 			ts_tabla_simbolos[ts_num_simbolos].longitud = strlen(lexema)-2;
 		}
@@ -135,7 +142,7 @@ void ts_guardar_simbolo(char *token, char *lexema){
 	
 }
 
-void ts_establecer_tipo (char* lista_ids, const char* tipo)
+void ts_establecer_tipo (char* lista_ids, TipoDato tipo)
 {
 	/* en la variable lista_ids viene una lista de nombres de variables separadas por coma */
 	char *inicio_actual, *siguiente_coma, *nombre_id;
@@ -155,7 +162,7 @@ void ts_establecer_tipo (char* lista_ids, const char* tipo)
 		int pos_ts = 0;
 		while (pos_ts < TS_TAMANIO_TABLA_SIMBOLOS) {
 			if (strncmp(inicio_actual, ts_tabla_simbolos[pos_ts].nombre, longitud) == 0) {
-				strcpy(ts_tabla_simbolos[pos_ts].tipo, tipo);
+				ts_tabla_simbolos[pos_ts].tipo = tipo;
 				break;
 			}
 			pos_ts++;
@@ -168,4 +175,8 @@ void ts_establecer_tipo (char* lista_ids, const char* tipo)
 		}
 	}
 	
+}
+
+const char *TipoDato_toString(TipoDato tipo) {
+	return TipoDato_names[tipo];	
 }
