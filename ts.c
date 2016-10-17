@@ -177,6 +177,37 @@ void ts_establecer_tipo (char* lista_ids, TipoDato tipo)
 	
 }
 
+struct ts_entrada *ts_buscar_identificador (char *nombre) {
+	int pos_ts = 0;
+	struct ts_entrada *encontrado = NULL;
+
+	while (encontrado == NULL && pos_ts < TS_TAMANIO_TABLA_SIMBOLOS) {
+		if (strcmp (nombre, ts_tabla_simbolos[pos_ts].nombre) == 0) {
+			encontrado = &(ts_tabla_simbolos[pos_ts]);
+		}
+		pos_ts++;
+	}
+	
+	return encontrado;
+}
+
+struct ts_entrada *ts_buscar_constante (char *valor) {
+	struct ts_entrada *encontrado = NULL;
+
+	if (valor[0] == '"') {
+	/* Si empieza con comilla es un string, en este caso el identificador es igual al valor */
+		encontrado = ts_buscar_identificador (valor);
+	} else {
+		/* Sino es un Integer o Float, en ese caso tenemos que agregarle un _ al nombre */
+		char *nombre = malloc (strlen (valor) + 2);
+		nombre[0] = '_';
+		nombre[1] = '\0';
+		strcat (nombre, valor);
+	}
+
+	return encontrado;
+}
+
 const char *TipoDato_toString(TipoDato tipo) {
 	return TipoDato_names[tipo];	
 }
