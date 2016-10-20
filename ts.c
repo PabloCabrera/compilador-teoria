@@ -192,6 +192,7 @@ struct ts_entrada *ts_buscar_identificador (char *nombre) {
 }
 
 struct ts_entrada *ts_buscar_constante (char *valor) {
+	printf("ts_entrada -> recibo valor=%s\n",valor );
 	struct ts_entrada *encontrado = NULL;
 
 	if (valor[0] == '"') {
@@ -203,6 +204,10 @@ struct ts_entrada *ts_buscar_constante (char *valor) {
 		nombre[0] = '_';
 		nombre[1] = '\0';
 		strcat (nombre, valor);
+		printf("ts_entrada ->buscando: %s\n",nombre );
+		encontrado= ts_buscar_identificador(nombre);
+		printf("ts_entrada ->encontre: %s \n",encontrado->nombre );
+
 	}
 
 	return encontrado;

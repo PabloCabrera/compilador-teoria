@@ -10,9 +10,11 @@ int yystopparser=0;
 FILE *yyin;
 char *yyltext;
 char *yytext;
+int contador_avg=0;
 
 /* Funciones definidas mas adelante */
 char* concat_ids(char* lista_ids, char* ultimo_id);
+int insertar_en_polaca(char* elemento);
 
 %}
 %token COMA
@@ -48,8 +50,8 @@ char* concat_ids(char* lista_ids, char* ultimo_id);
 %token RESERVADA_ELSE
 
 %token <stringValue> IDENTIFICADOR
-%token CONSTANTE_REAL
-%token CONSTANTE_ENTERA
+%token <stringValue> CONSTANTE_REAL
+%token <stringValue> CONSTANTE_ENTERA
 %token CONSTANTE_STRING
 %token OP_IGUAL
 %token OP_MAYOR_IGUAL
@@ -91,7 +93,7 @@ tipo : RESERVADA_FLOAT {$$ = FLOAT;}| RESERVADA_INTEGER {$$ = INTEGER;} | RESERV
 
 list_sentencias : sent | list_sentencias sent ;
 
-sent : sent_asignacion | sent_write | sent_if | sent_if_else | sent_while | sent_avg;
+sent : sent_asignacion {terminar_polaca();}| sent_write | sent_if | sent_if_else | sent_while;
 
 // write "hola mundo" ;
 sent_write : RESERVADA_WRITE CONSTANTE_STRING FIN_SENTENCIA {printf ("Sentencia Write\n");}| RESERVADA_WRITE IDENTIFICADOR FIN_SENTENCIA {printf ("Sentencia Write\n");};
@@ -103,19 +105,27 @@ sent_while :RESERVADA_WHILE {printf("INICIO WHILE\n");} INICIO_PARENTESIS condic
 
 //------------------------------------ operaciones matematicas y asignaciones;
 // palabra : 3*4 ;
-sent_asignacion : IDENTIFICADOR {printf("Asignacion con identificador %s\n",yytext);} OP_ASIGNACION  exp_mat FIN_SENTENCIA ;
+sent_asignacion : IDENTIFICADOR OP_ASIGNACION  exp_mat FIN_SENTENCIA {insertar_simbolo_polaca(ts_buscar_identificador($1)); insertar_en_polaca(":");} ;
 
+exp_mat : exp_mat OP_SUMA t { insertar_en_polaca("+"); }; 
+exp_mat : exp_mat OP_RESTA t { insertar_en_polaca("-"); };
+exp_mat : t;
 
-exp_mat : exp_mat OP_SUMA t {printf("Suma\n");} | exp_mat OP_RESTA t {printf("Resta\n");} | t;
+t : t OP_MULTIPLICACION f {insertar_en_polaca("*");};
+t : t OP_DIVISION f {insertar_en_polaca("/");};
+t : f;
 
-t : t OP_MULTIPLICACION f {printf("Multiplicacion\n");}| t OP_DIVISION f {printf("Division\n");} | f;
-
-f : CONSTANTE_REAL | CONSTANTE_ENTERA | IDENTIFICADOR | INICIO_PARENTESIS exp_mat FIN_PARENTESIS | sent_avg;
+f : CONSTANTE_REAL { insertar_simbolo_polaca(ts_buscar_constante(yytext)); };
+f : CONSTANTE_ENTERA{ insertar_simbolo_polaca(ts_buscar_constante(yytext)); };
+f : IDENTIFICADOR { insertar_simbolo_polaca(ts_buscar_identificador(yytext)); };
+f : INICIO_PARENTESIS exp_mat FIN_PARENTESIS ;
+f : sent_avg;
 
 // avg([3,3*4,12]);
-sent_avg :RESERVADA_AVG INICIO_PARENTESIS INICIO_CORCHETE lista_exp_matresiones FIN_CORCHETE FIN_PARENTESIS FIN_SENTENCIA {printf("Sentencia avg\n");} ;
+sent_avg : RESERVADA_AVG INICIO_PARENTESIS INICIO_CORCHETE lista_exp_matresiones FIN_CORCHETE FIN_PARENTESIS FIN_SENTENCIA {printf("Sentencia avg\n");} ;
 
-lista_exp_matresiones : exp_mat | lista_exp_matresiones COMA exp_mat ;
+lista_exp_matresiones : exp_mat {contador_avg++;};
+lista_exp_matresiones : lista_exp_matresiones COMA exp_mat {contador_avg++; insertar_en_polaca("+"); };
 
 // 3  5;
 condicion : condicion_mayor {printf("Condicion mayor\n");} | condicion_igual {printf("Condicion igual\n");}| condicion_menor {printf("Condicion menor\n");} | condicion_distinto {printf("Condicion distinto\n");} | condicion_mayor_igual {printf("Condicion mayor igual\n");} | condicion_menor_igual {printf("Condicion menor igual\n");} ;
@@ -163,4 +173,23 @@ char* concat_ids(char* lista_ids, char* ultimo_id){
 	} else {
 		return strdup(ultimo_id);
 	}
+}
+
+int insertar_simbolo_polaca(struct ts_entrada *simbolo){
+	FILE *f = fopen ("C:/Users/Luz/Desktop/teoria/resultado_polaca.txt", "a");
+	fprintf(f,"%s ",simbolo->nombre);
+	return 1;
+}
+
+
+int insertar_en_polaca(char *elemento){
+	FILE *f = fopen ("C:/Users/Luz/Desktop/teoria/resultado_polaca.txt", "a");
+	fprintf(f,"%s ",elemento);
+	return 1;
+}
+
+int terminar_polaca(){
+	FILE *f = fopen ("C:/Users/Luz/Desktop/teoria/resultado_polaca.txt", "a");
+	fprintf(f,"\n ");
+	return 1;
 }

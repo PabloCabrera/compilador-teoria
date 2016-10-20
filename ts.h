@@ -14,22 +14,22 @@ typedef enum enumTipoDato {
 	STRING=3
 } TipoDato;
 
+ 
 struct ts_entrada {
-		char nombre[100];
-		TipoDato tipo;
-		char valor[100];
-		int longitud;
-	};
+        char nombre[100];
+        TipoDato tipo;
+        char valor[100];
+        int longitud;
+};
 
-struct ts_entrada ts_tabla_simbolos[TS_TAMANIO_TABLA_SIMBOLOS];
 
-const char *TipoDato_toString(TipoDato tipo);
 void ts_guardar_simbolo(char *token, char *lexema);
 bool ts_verificar_existencia(char *lexema);
 void ts_escribir_html(const char *nombre_archivo);
 void ts_establecer_tipo(char* lista_ids, TipoDato tipo);
+const char *TipoDato_toString(TipoDato tipo);
 struct ts_entrada *ts_buscar_identificador (char *nombre);
 struct ts_entrada *ts_buscar_constante (char *valor);
-
+struct ts_entrada ts_tabla_simbolos[TS_TAMANIO_TABLA_SIMBOLOS];
 
 #endif
