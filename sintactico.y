@@ -15,6 +15,7 @@ int contador_avg=0;
 /* Funciones definidas mas adelante */
 char* concat_ids(char* lista_ids, char* ultimo_id);
 int insertar_en_polaca(char* elemento);
+void terminar_avg(int cantidad_elementos);
 
 %}
 %token COMA
@@ -123,7 +124,7 @@ f : INICIO_PARENTESIS exp_mat FIN_PARENTESIS ;
 f : sent_avg;
 
 // avg([3,3*4,12]);
-sent_avg : RESERVADA_AVG INICIO_PARENTESIS INICIO_CORCHETE lista_exp_matresiones FIN_CORCHETE FIN_PARENTESIS FIN_SENTENCIA {printf("Sentencia avg\n");} ;
+sent_avg : RESERVADA_AVG INICIO_PARENTESIS INICIO_CORCHETE lista_exp_matresiones FIN_CORCHETE FIN_PARENTESIS FIN_SENTENCIA {terminar_avg(contador_avg);} ;
 
 lista_exp_matresiones : exp_mat {contador_avg++;};
 lista_exp_matresiones : lista_exp_matresiones COMA exp_mat {contador_avg++; insertar_en_polaca("+"); };
@@ -187,6 +188,14 @@ int insertar_en_polaca(char *elemento){
 	FILE *f = fopen ("resultado_polaca.txt", "a");
 	fprintf(f,"%s ",elemento);
 	return 1;
+}
+
+void terminar_avg(int cantidad_elementos) {
+	char contador_str[11];
+	sprintf(contador_str, "%d", cantidad_elementos);
+	ts_guardar_simbolo ("const_entera", contador_str);
+	insertar_simbolo_polaca(ts_buscar_constante(contador_str));
+	insertar_en_polaca("/");
 }
 
 int terminar_polaca(){
