@@ -107,6 +107,7 @@ sent_while :RESERVADA_WHILE {printf("INICIO WHILE\n");} INICIO_PARENTESIS condic
 // palabra : 3*4 ;
 sent_asignacion : IDENTIFICADOR OP_ASIGNACION  exp_mat FIN_SENTENCIA {insertar_simbolo_polaca(ts_buscar_identificador($1)); insertar_en_polaca(":");} ;
 
+
 exp_mat : exp_mat OP_SUMA t { insertar_en_polaca("+"); }; 
 exp_mat : exp_mat OP_RESTA t { insertar_en_polaca("-"); };
 exp_mat : t;
@@ -176,20 +177,20 @@ char* concat_ids(char* lista_ids, char* ultimo_id){
 }
 
 int insertar_simbolo_polaca(struct ts_entrada *simbolo){
-	FILE *f = fopen ("C:/Users/Luz/Desktop/teoria/resultado_polaca.txt", "a");
+	FILE *f = fopen ("resultado_polaca.txt", "a");
 	fprintf(f,"%s ",simbolo->nombre);
 	return 1;
 }
 
 
 int insertar_en_polaca(char *elemento){
-	FILE *f = fopen ("C:/Users/Luz/Desktop/teoria/resultado_polaca.txt", "a");
+	FILE *f = fopen ("resultado_polaca.txt", "a");
 	fprintf(f,"%s ",elemento);
 	return 1;
 }
 
 int terminar_polaca(){
-	FILE *f = fopen ("C:/Users/Luz/Desktop/teoria/resultado_polaca.txt", "a");
+	FILE *f = fopen ("resultado_polaca.txt", "a");
 	fprintf(f,"\n ");
 	return 1;
 }

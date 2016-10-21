@@ -84,7 +84,7 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 {RESERVADA_NULL} { return RESERVADA_NULL; }
 {RESERVADA_ELSE} { return RESERVADA_ELSE; }
 
-{IDENTIFICADOR}	{  ts_guardar_simbolo("identificador", yytext);  return IDENTIFICADOR;}
+{IDENTIFICADOR}	{  ts_guardar_simbolo("identificador", yytext); yylval.stringValue=ts_buscar_identificador(yytext)->nombre;  return IDENTIFICADOR;}
 {OP_ASIGNACION} { return  OP_ASIGNACION;}
 {FIN_SENTENCIA} { return  FIN_SENTENCIA;}
 {CONSTANTE_REAL}	{ verificar_cota_real(yytext); return  CONSTANTE_REAL; }
