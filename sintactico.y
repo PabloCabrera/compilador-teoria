@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
+#include "plci.c"
 #include "ts.h"
 #include "y.tab.h"
 
@@ -11,11 +12,15 @@ FILE *yyin;
 char *yyltext;
 char *yytext;
 int contador_avg=0;
+int contador_polacas;
+PolacaInversa polaca_actual;
 
 /* Funciones definidas mas adelante */
 char* concat_ids(char* lista_ids, char* ultimo_id);
-int insertar_en_polaca(char* elemento);
+void insertar_operador_polaca(char *operador);
+void insertar_simbolo_polaca (struct ts_entrada *simbolo);
 void terminar_avg(int cantidad_elementos);
+void terminar_polaca();
 
 %}
 %token COMA
@@ -106,15 +111,15 @@ sent_while :RESERVADA_WHILE {printf("INICIO WHILE\n");} INICIO_PARENTESIS condic
 
 //------------------------------------ operaciones matematicas y asignaciones;
 // palabra : 3*4 ;
-sent_asignacion : IDENTIFICADOR OP_ASIGNACION  exp_mat FIN_SENTENCIA {insertar_simbolo_polaca(ts_buscar_identificador($1)); insertar_en_polaca(":");} ;
+sent_asignacion : IDENTIFICADOR OP_ASIGNACION  exp_mat FIN_SENTENCIA {insertar_simbolo_polaca(ts_buscar_identificador($1)); insertar_operador_polaca(":");} ;
 
 
-exp_mat : exp_mat OP_SUMA t { insertar_en_polaca("+"); }; 
-exp_mat : exp_mat OP_RESTA t { insertar_en_polaca("-"); };
+exp_mat : exp_mat OP_SUMA t { insertar_operador_polaca("+"); }; 
+exp_mat : exp_mat OP_RESTA t { insertar_operador_polaca("-"); };
 exp_mat : t;
 
-t : t OP_MULTIPLICACION f {insertar_en_polaca("*");};
-t : t OP_DIVISION f {insertar_en_polaca("/");};
+t : t OP_MULTIPLICACION f {insertar_operador_polaca("*");};
+t : t OP_DIVISION f {insertar_operador_polaca("/");};
 t : f;
 
 f : CONSTANTE_REAL { insertar_simbolo_polaca(ts_buscar_constante(yytext)); };
@@ -127,7 +132,7 @@ f : sent_avg;
 sent_avg : RESERVADA_AVG INICIO_PARENTESIS INICIO_CORCHETE lista_exp_matresiones FIN_CORCHETE FIN_PARENTESIS {terminar_avg(contador_avg);} ;
 
 lista_exp_matresiones : exp_mat {contador_avg++;};
-lista_exp_matresiones : lista_exp_matresiones COMA exp_mat {contador_avg++; insertar_en_polaca("+"); };
+lista_exp_matresiones : lista_exp_matresiones COMA exp_mat {contador_avg++; insertar_operador_polaca("+"); };
 
 // 3  5;
 condicion : condicion_mayor {printf("Condicion mayor\n");} | condicion_igual {printf("Condicion igual\n");}| condicion_menor {printf("Condicion menor\n");} | condicion_distinto {printf("Condicion distinto\n");} | condicion_mayor_igual {printf("Condicion mayor igual\n");} | condicion_menor_igual {printf("Condicion menor igual\n");} ;
@@ -177,17 +182,22 @@ char* concat_ids(char* lista_ids, char* ultimo_id){
 	}
 }
 
-int insertar_simbolo_polaca(struct ts_entrada *simbolo){
-	FILE *f = fopen ("resultado_polaca.txt", "a");
-	fprintf(f,"%s ",simbolo->nombre);
-	return 1;
+void insertar_simbolo_polaca(struct ts_entrada *simbolo){
+	if (polaca_actual == NULL) {
+		polaca_actual = PolacaInversa_nueva (simbolo);
+	} else {
+		PolacaInversa_append_simbolo (polaca_actual, simbolo);
+	}
 }
 
 
-int insertar_en_polaca(char *elemento){
-	FILE *f = fopen ("resultado_polaca.txt", "a");
-	fprintf(f,"%s ",elemento);
-	return 1;
+void insertar_operador_polaca(char *operador){
+	if (polaca_actual == NULL) {
+		printf ("ERROR: Polaca inversa no puede empezar con un operador\n");
+		exit (1);
+	} else {
+		PolacaInversa_append_operador (polaca_actual, operador);
+	}
 }
 
 void terminar_avg(int cantidad_elementos) {
@@ -195,12 +205,16 @@ void terminar_avg(int cantidad_elementos) {
 	sprintf(contador_str, "%d", cantidad_elementos);
 	ts_guardar_simbolo ("const_entera", contador_str);
 	insertar_simbolo_polaca(ts_buscar_constante(contador_str));
-	insertar_en_polaca("/");
+	insertar_operador_polaca("/");
 	contador_avg = 0; /* Esta variable es global en el archivo */
 }
 
-int terminar_polaca(){
-	FILE *f = fopen ("resultado_polaca.txt", "a");
-	fprintf(f,"\n ");
-	return 1;
+void terminar_polaca(){
+	printf ("Polaca Inversa:");
+	PolacaInversa_print(polaca_actual);
+	printf ("\n");
+	/* Generar codigo ASM */
+
+	PolacaInversa_free (polaca_actual); /* Evitar generar garbage */
+	polaca_actual = NULL;
 }
