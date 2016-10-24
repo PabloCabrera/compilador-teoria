@@ -13,7 +13,6 @@ typedef enum enumTipoDato {
 	FLOAT=2,
 	STRING=3
 } TipoDato;
-
  
 struct ts_entrada {
         char nombre[100];
@@ -21,7 +20,6 @@ struct ts_entrada {
         char valor[100];
         int longitud;
 };
-
 
 void ts_guardar_simbolo(char *token, char *lexema);
 bool ts_verificar_existencia(char *lexema);

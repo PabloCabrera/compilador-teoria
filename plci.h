@@ -18,7 +18,6 @@ typedef struct plci_elemento {
 	struct plci_elemento *siguiente;
 } *PolacaInversa;
 
-
 PolacaInversa polaca_nueva (struct ts_entrada *simbolo);
 void PolacaInversa_append_simbolo (PolacaInversa polaca, struct ts_entrada *simbolo);
 void PolacaInversa_append_operador (PolacaInversa polaca, char *operador);

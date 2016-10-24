@@ -78,7 +78,7 @@ void terminar_polaca();
 %%
 
 //---------------------------- estructura general;
-programa : prog;
+programa : prog {printf ("Polaca Inversa:"); PolacaInversa_print(polaca_actual); printf ("\n");};
 
 prog : seccion_declaracion seccion_sentencias ;
 prog :  list_write;
@@ -103,11 +103,10 @@ tipo : RESERVADA_FLOAT {$$ = FLOAT;};
 tipo :  RESERVADA_INTEGER {$$ = INTEGER;} ;
 tipo :  RESERVADA_STRING {$$ = STRING;};
 
-
 list_sentencias : sent ;
 list_sentencias :  list_sentencias sent ;
 
-sent : sent_asignacion {terminar_polaca();};
+sent : sent_asignacion;
 sent :  sent_write ;
 sent :  sent_if ;
 sent :  sent_if_else ;
@@ -125,7 +124,6 @@ sent_while :RESERVADA_WHILE INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BL
 //------------------------------------ operaciones matematicas y asignaciones;
 // palabra : 3*4 ;
 sent_asignacion : IDENTIFICADOR OP_ASIGNACION  exp_mat FIN_SENTENCIA {insertar_simbolo_polaca(ts_buscar_identificador($1)); insertar_operador_polaca(":");} ;
-
 
 exp_mat : exp_mat OP_SUMA t { insertar_operador_polaca("+"); }; 
 exp_mat : exp_mat OP_RESTA t { insertar_operador_polaca("-"); };
@@ -169,11 +167,11 @@ int main (int argc, char *argv[])
 	{
 		printf("\n No se puede abrir el archivo: %s\n", argv[1]);
 	}
-	else
+	else 
 	{
 		yyparse();
 		ts_escribir_html("tabla_simbolos.html");
-		}
+	}
 	fclose(yyin);
 	return(0);
 }
@@ -227,13 +225,6 @@ void terminar_avg(int cantidad_elementos) {
 	insertar_operador_polaca("/");
 	contador_avg = 0; /* Esta variable es global en el archivo */
 }
-
 void terminar_polaca(){
-	printf ("Polaca Inversa:");
-	PolacaInversa_print(polaca_actual);
-	printf ("\n");
-	/* Generar codigo ASM */
-
-	PolacaInversa_free (polaca_actual); /* Evitar generar garbage */
-	polaca_actual = NULL;
+	/*Generar codigo ASM */
 }

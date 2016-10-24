@@ -36,8 +36,7 @@ void PolacaInversa_append_operador (PolacaInversa polaca, char *operador) {
 		tail-> operador = operador;
 		tail-> siguiente = NULL;
 		polaca-> siguiente = tail;
-	}
-	
+	}	
 }
 
 void PolacaInversa_print (PolacaInversa polaca){
