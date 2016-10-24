@@ -15,10 +15,10 @@ while (contador <= 92) {
 	contador: contador + 1;
 	actual: (contador/0.342) + (contador*contador);
 	suma: suma + actual;
-	avg([5]);
-	avg([5,3]);
-	avg([3,actual]);
-	avg([3,3*4,12,actual,actual*2, actual*actual]);
+	promedio: avg([5]);
+	promedio: avg([5,3]);
+	promedio: avg([3,actual]);
+	promedio: avg([3,3*4,12,actual,actual*2, actual*actual]);
 
 }
 

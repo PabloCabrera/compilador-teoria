@@ -1,7 +1,0 @@
-DECVAR
-	contador: Integer;
-	c: Integer;
-ENDDEC
-	contador: 2 + 5.0;
-	c: contador - 1;
-	contador: 5 * 3 + 1;
