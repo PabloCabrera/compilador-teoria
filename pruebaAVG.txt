@@ -1,9 +1,11 @@
 DECVAR
 	
 	actual: Float;
+	siguiente: Integer;
 
 ENDDEC
 	
 	actual: 1.5;
 	
-avg([3, 3*4, 12, actual, actual*2, actual*actual]);
+actual: avg([3, 3*4, 12, actual, actual*2, actual*actual]);
+siguiente: avg([1000,400,128,9]);

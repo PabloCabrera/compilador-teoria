@@ -124,7 +124,7 @@ f : INICIO_PARENTESIS exp_mat FIN_PARENTESIS ;
 f : sent_avg;
 
 // avg([3,3*4,12]);
-sent_avg : RESERVADA_AVG INICIO_PARENTESIS INICIO_CORCHETE lista_exp_matresiones FIN_CORCHETE FIN_PARENTESIS FIN_SENTENCIA {terminar_avg(contador_avg);} ;
+sent_avg : RESERVADA_AVG INICIO_PARENTESIS INICIO_CORCHETE lista_exp_matresiones FIN_CORCHETE FIN_PARENTESIS {terminar_avg(contador_avg);} ;
 
 lista_exp_matresiones : exp_mat {contador_avg++;};
 lista_exp_matresiones : lista_exp_matresiones COMA exp_mat {contador_avg++; insertar_en_polaca("+"); };
@@ -196,6 +196,7 @@ void terminar_avg(int cantidad_elementos) {
 	ts_guardar_simbolo ("const_entera", contador_str);
 	insertar_simbolo_polaca(ts_buscar_constante(contador_str));
 	insertar_en_polaca("/");
+	contador_avg = 0; /* Esta variable es global en el archivo */
 }
 
 int terminar_polaca(){
