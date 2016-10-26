@@ -21,6 +21,8 @@ void insertar_operador_polaca(char *operador);
 void insertar_simbolo_polaca (struct ts_entrada *simbolo);
 void terminar_avg(int cantidad_elementos);
 void terminar_polaca();
+void comprobar_tipos_exp(TipoDato tipo1, TipoDato tipo2);
+void comprobar_tipos_asignacion(TipoDato tipo1, TipoDato tipo2);
 
 %}
 %token COMA
@@ -74,7 +76,9 @@ void terminar_polaca();
 
 %type <stringValue> list_identificadores;
 %type <typeValue> tipo;
-
+%type <typeValue> f;
+%type <typeValue> exp_mat;
+%type <typeValue> t;
 %%
 
 //---------------------------- estructura general;
@@ -123,21 +127,64 @@ sent_while :RESERVADA_WHILE INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BL
 
 //------------------------------------ operaciones matematicas y asignaciones;
 // palabra : 3*4 ;
-sent_asignacion : IDENTIFICADOR OP_ASIGNACION  exp_mat FIN_SENTENCIA {insertar_simbolo_polaca(ts_buscar_identificador($1)); insertar_operador_polaca(":");} ;
+sent_asignacion : IDENTIFICADOR OP_ASIGNACION  exp_mat FIN_SENTENCIA {
+	struct ts_entrada *id;
+	id=ts_buscar_identificador($1);
+	comprobar_tipos_asignacion (id-> tipo, $3);
+	insertar_simbolo_polaca(ts_buscar_identificador($1));
+	insertar_operador_polaca(":");
+} ;
 
-exp_mat : exp_mat OP_SUMA t { insertar_operador_polaca("+"); }; 
-exp_mat : exp_mat OP_RESTA t { insertar_operador_polaca("-"); };
-exp_mat : t;
+exp_mat : exp_mat OP_SUMA t {
+	$$=FLOAT;
+	comprobar_tipos_exp($1,$3);
+	insertar_operador_polaca("+");
+}; 
+exp_mat : exp_mat OP_RESTA t {
+	$$=FLOAT;
+	comprobar_tipos_exp($1,$3);
+	insertar_operador_polaca("-");
+};
+exp_mat : t {
+};
 
-t : t OP_MULTIPLICACION f {insertar_operador_polaca("*");};
-t : t OP_DIVISION f {insertar_operador_polaca("/");};
+t : t OP_MULTIPLICACION f {
+	$$=FLOAT;
+	comprobar_tipos_exp($1,$3);
+	insertar_operador_polaca("*");
+};
+t : t OP_DIVISION f {
+	$$=FLOAT;
+	comprobar_tipos_exp($1,$3);
+	insertar_operador_polaca("/");
+};
 t : f;
 
-f : CONSTANTE_REAL { insertar_simbolo_polaca(ts_buscar_constante(yytext)); };
-f : CONSTANTE_ENTERA{ insertar_simbolo_polaca(ts_buscar_constante(yytext)); };
-f : IDENTIFICADOR { insertar_simbolo_polaca(ts_buscar_identificador(yytext)); };
-f : INICIO_PARENTESIS exp_mat FIN_PARENTESIS ;
-f : sent_avg;
+f : CONSTANTE_REAL {
+	$$=FLOAT;
+	insertar_simbolo_polaca(ts_buscar_constante(yytext));
+};
+f : CONSTANTE_ENTERA{
+	$$=INTEGER;
+	insertar_simbolo_polaca(ts_buscar_constante(yytext));
+};
+f : IDENTIFICADOR {
+	struct ts_entrada *id = ts_buscar_identificador(yytext);
+	$$=id-> tipo;
+	insertar_simbolo_polaca(id);
+};
+f : INICIO_PARENTESIS exp_mat FIN_PARENTESIS {
+	$$=$2;
+};
+
+f : sent_avg {
+	$$=FLOAT;
+};
+
+f : CONSTANTE_STRING {
+	$$=STRING;
+	insertar_simbolo_polaca(ts_buscar_constante(yytext));
+}
 
 // avg([3,3*4,12]);
 sent_avg : RESERVADA_AVG INICIO_PARENTESIS INICIO_CORCHETE lista_exp_matresiones FIN_CORCHETE FIN_PARENTESIS {terminar_avg(contador_avg);} ;
@@ -227,4 +274,23 @@ void terminar_avg(int cantidad_elementos) {
 }
 void terminar_polaca(){
 	/*Generar codigo ASM */
+}
+
+void comprobar_tipos_exp(TipoDato tipo1, TipoDato tipo2){
+	if( (tipo1==STRING) || (tipo2==STRING) ){
+		printf("No se pueden realizar operaciones con string.\n");
+		exit(1);
+	}
+}
+
+void comprobar_tipos_asignacion(TipoDato tipo1, TipoDato tipo2){
+	if ( (tipo1==STRING) && (tipo2!=STRING) ) {
+		printf("No se puede asignar a un string otro tipo de valor distinto a este. \n");
+		exit(1);
+	}else{
+		if((tipo1!=STRING) && (tipo2==STRING)){
+			printf("No se puede asignar un string a otro tipo de dato. \n");
+			exit(1);
+		}
+	}
 }
