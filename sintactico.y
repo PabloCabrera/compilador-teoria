@@ -6,6 +6,8 @@
 #include "plci.c"
 #include "ts.h"
 #include "y.tab.h"
+#include "pila.h"
+#inclide "pila.c"
 
 int yystopparser=0;
 FILE *yyin;
@@ -14,6 +16,9 @@ char *yytext;
 int contador_avg=0;
 int contador_polacas;
 PolacaInversa polaca_actual;
+char *EspacioVacio = "nulo";
+Pila pila_if;
+Pila pila_while;
 
 /* Funciones definidas mas adelante */
 char* concat_ids(char* lista_ids, char* ultimo_id);
@@ -23,6 +28,9 @@ void terminar_avg(int cantidad_elementos);
 void terminar_polaca();
 void comprobar_tipos_exp(TipoDato tipo1, TipoDato tipo2);
 void comprobar_tipos_asignacion(TipoDato tipo1, TipoDato tipo2);
+PolacaInversa obtener_subindice_polaca();
+void agregar_elemento_pila_if(PolacaInversa subindice);
+
 
 %}
 %token COMA
@@ -200,12 +208,42 @@ condicion :  condicion_distinto  ;
 condicion :  condicion_mayor_igual  ;
 condicion :  condicion_menor_igual;
 
-condicion_mayor : IDENTIFICADOR OP_MAYOR exp_mat;
-condicion_igual : IDENTIFICADOR OP_IGUAL exp_mat;
-condicion_menor : IDENTIFICADOR OP_MENOR exp_mat;
-condicion_distinto : IDENTIFICADOR OP_DISTINTO exp_mat;
-condicion_mayor_igual : IDENTIFICADOR OP_MAYOR_IGUAL exp_mat;
-condicion_menor_igual : IDENTIFICADOR OP_MENOR_IGUAL exp_mat;
+condicion_mayor : IDENTIFICADOR OP_MAYOR exp_mat {
+	struct ts_entrada *id = ts_buscar_identificador($1);
+	$$=id-> tipo;
+	insertar_simbolo_polaca(id);
+	insertar_condicion("BLE");
+};
+condicion_igual : IDENTIFICADOR OP_IGUAL exp_mat {
+	struct ts_entrada *id = ts_buscar_identificador($1);
+	$$=id-> tipo;
+	insertar_simbolo_polaca(id);
+	insertar_condicion("BNE");
+};
+condicion_menor : IDENTIFICADOR OP_MENOR exp_mat {
+	struct ts_entrada *id = ts_buscar_identificador($1);
+	$$=id-> tipo;
+	insertar_simbolo_polaca(id);
+	insertar_condicion("BGE");
+};
+condicion_distinto : IDENTIFICADOR OP_DISTINTO exp_mat {
+	struct ts_entrada *id = ts_buscar_identificador($1);
+	$$=id-> tipo;
+	insertar_simbolo_polaca(id);
+	insertar_condicion("BEQ");
+};
+condicion_mayor_igual : IDENTIFICADOR  OP_MAYOR_IGUAL exp_mat {
+	struct ts_entrada *id = ts_buscar_identificador($1);
+	$$=id-> tipo;
+	insertar_simbolo_polaca(id);
+	insertar_condicion("BLT");
+};
+condicion_menor_igual : IDENTIFICADOR OP_MENOR_IGUAL exp_mat {
+	struct ts_entrada *id = ts_buscar_identificador($1);
+	$$=id-> tipo;
+	insertar_simbolo_polaca(id);
+	insertar_condicion("BGT");
+};
 
 %%
 int main (int argc, char *argv[]) 
@@ -293,4 +331,42 @@ void comprobar_tipos_asignacion(TipoDato tipo1, TipoDato tipo2){
 			exit(1);
 		}
 	}
+}
+
+void insertar_condicion(char* dato) {
+	insertar_operador_polaca("CMP");
+	//insertamos el operador de comparacion (si a esta func la llamo OP_MAYOR, el dato q recibimos es "BLE" = menor igual)
+	insertar_operador_polaca(dato);
+	insertamos un lugar vacio, este va a tener q apuntar a el principio del ELSE o el FiIN del IF
+	insertar_operador_polaca(EspacioVacio); //constante global
+	//ahora tendriamos que obtener el subindice de la lista polaca en este momento
+	//y guardarlo en otra lista, para q cuando lleguemos al FIN/ELSE pongamos el valor q esta en la lista en el espacio vacio
+	PolacaInversa subindice = obtener_subindice_polaca();
+	//agregar este nuevo elemento a la pila de indices de IF
+	agregar_elemento_pila_if(subindice);
+}
+
+PolacaInversa obtener_subindice_polaca(){
+	printf("DEBUG: buscando ultimo elemento en la polaca");
+	int encontrado=0;
+	PolacaInversa polaca_para_buscar = polaca_actual;
+	while(encontrado==0){
+		if(polaca_para_buscar-> siguiente){
+			//pasa al siguiente
+			polaca_para_buscar = polaca_para_buscar-> siguiente;
+		}else{
+			//si este es el ultimo
+			encontrado=1;
+		}
+	}
+	printf("DEBUG: encontramos el ultimo subindice");
+	return polaca_para_buscar;
+}
+
+void agregar_elemento_pila_if(PolacaInversa subindice){
+	if(pila_if==NULL){
+		pila_if = nueva_pila();
+	}
+	ElementoPila e = nuevo_elemento(subindice);
+	apilar(pila_if,e);
 }
