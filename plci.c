@@ -9,7 +9,7 @@ PolacaInversa PolacaInversa_nueva (struct ts_entrada *simbolo) {
 	polaca = (PolacaInversa) malloc (sizeof (struct plci_elemento));
 	polaca-> tipo = SIMBOLO;
 	polaca-> simbolo = simbolo;
-	polaca-> operador = NULL;
+	polaca-> operador = NULL; 	//operador puede ser un operador o una etiqueta de salto
 	polaca-> siguiente = NULL;
 	
 	return polaca;

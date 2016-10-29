@@ -7,7 +7,7 @@
 #include "ts.h"
 #include "y.tab.h"
 #include "pila.h"
-#inclide "pila.c"
+#include "pila.c"
 
 int yystopparser=0;
 FILE *yyin;
@@ -19,6 +19,7 @@ PolacaInversa polaca_actual;
 char *EspacioVacio = "nulo";
 Pila pila_if;
 Pila pila_while;
+int contadorIF=0;
 
 /* Funciones definidas mas adelante */
 char* concat_ids(char* lista_ids, char* ultimo_id);
@@ -30,8 +31,8 @@ void comprobar_tipos_exp(TipoDato tipo1, TipoDato tipo2);
 void comprobar_tipos_asignacion(TipoDato tipo1, TipoDato tipo2);
 PolacaInversa obtener_subindice_polaca();
 void agregar_elemento_pila_if(PolacaInversa subindice);
-
-
+void insertar_condicion(char* dato);
+void fin_if();
 %}
 %token COMA
 %token OP_MAYOR
@@ -87,6 +88,12 @@ void agregar_elemento_pila_if(PolacaInversa subindice);
 %type <typeValue> f;
 %type <typeValue> exp_mat;
 %type <typeValue> t;
+%type <typeValue> condicion_mayor;
+%type <typeValue> condicion_menor;
+%type <typeValue> condicion_igual;
+%type <typeValue> condicion_distinto;
+%type <typeValue> condicion_mayor_igual;
+%type <typeValue> condicion_menor_igual;
 %%
 
 //---------------------------- estructura general;
@@ -128,8 +135,9 @@ sent :  sent_while;
 sent_write : RESERVADA_WRITE CONSTANTE_STRING FIN_SENTENCIA ;
 sent_write :  RESERVADA_WRITE IDENTIFICADOR FIN_SENTENCIA;
 
-sent_if : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE;
-sent_if_else : sent_if RESERVADA_ELSE INICIO_BLOQUE list_sentencias FIN_BLOQUE;
+sent_if : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_if();};
+//sent_if_else : sent_if RESERVADA_ELSE INICIO_BLOQUE list_sentencias FIN_BLOQUE;
+sent_if_else : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {} RESERVADA_ELSE INICIO_BLOQUE list_sentencias FIN_BLOQUE;
 
 sent_while :RESERVADA_WHILE INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE;
 
@@ -302,6 +310,24 @@ void insertar_operador_polaca(char *operador){
 	}
 }
 
+void insertar_etiqueta_polaca(char *etiqueta){
+	if (polaca_actual == NULL) {
+		printf ("ERROR: Polaca inversa no puede empezar con un etiqueta\n");
+		exit (1);
+	} else {
+		PolacaInversa_append_etiqueta (polaca_actual, etiqueta);
+	}
+}
+
+void insertar_salto_polaca(char *salto){
+	if (polaca_actual == NULL) {
+		printf ("ERROR: Polaca inversa no puede empezar con un salto\n");
+		exit (1);
+	} else {
+		PolacaInversa_append_salto (polaca_actual, salto);
+	}
+}
+
 void terminar_avg(int cantidad_elementos) {
 	char contador_str[11];
 	sprintf(contador_str, "%d", cantidad_elementos);
@@ -335,19 +361,23 @@ void comprobar_tipos_asignacion(TipoDato tipo1, TipoDato tipo2){
 
 void insertar_condicion(char* dato) {
 	insertar_operador_polaca("CMP");
-	//insertamos el operador de comparacion (si a esta func la llamo OP_MAYOR, el dato q recibimos es "BLE" = menor igual)
-	insertar_operador_polaca(dato);
-	insertamos un lugar vacio, este va a tener q apuntar a el principio del ELSE o el FiIN del IF
+	//insertamos un lugar vacio, este va a tener q apuntar a el principio del ELSE o el FIN del IF
 	insertar_operador_polaca(EspacioVacio); //constante global
+
 	//ahora tendriamos que obtener el subindice de la lista polaca en este momento
 	//y guardarlo en otra lista, para q cuando lleguemos al FIN/ELSE pongamos el valor q esta en la lista en el espacio vacio
 	PolacaInversa subindice = obtener_subindice_polaca();
 	//agregar este nuevo elemento a la pila de indices de IF
 	agregar_elemento_pila_if(subindice);
+
+	//insertamos el operador de comparacion (si a esta func la llamo OP_MAYOR, el dato q recibimos es "BLE" = menor igual)
+	insertar_operador_polaca(dato);
+
+	
 }
 
 PolacaInversa obtener_subindice_polaca(){
-	printf("DEBUG: buscando ultimo elemento en la polaca");
+	//printf("DEBUG: buscando ultimo elemento en la polaca");
 	int encontrado=0;
 	PolacaInversa polaca_para_buscar = polaca_actual;
 	while(encontrado==0){
@@ -359,7 +389,7 @@ PolacaInversa obtener_subindice_polaca(){
 			encontrado=1;
 		}
 	}
-	printf("DEBUG: encontramos el ultimo subindice");
+	//printf("DEBUG: encontramos el ultimo subindice");
 	return polaca_para_buscar;
 }
 
@@ -370,3 +400,21 @@ void agregar_elemento_pila_if(PolacaInversa subindice){
 	ElementoPila e = nuevo_elemento(subindice);
 	apilar(pila_if,e);
 }
+
+void fin_if(){
+	//8 caracteres + caracter de fin de cadena
+	char* etiqueta = (char*) malloc(9);
+	//sprintf guarda en el primer parametro el resto de las cosas
+	//%3.d significa que va a poner un entero de 3 digitos. Ej:001, 002...
+	sprintf(etiqueta,"etqif%3.d",contadorIF);
+	contadorIF++;
+	insertar_operador_polaca(etiqueta);
+
+	//recupero el topecito de la pila	
+	ElementoPila elementito = desapilar(pila);
+	//el elemento al que apunta el tope es:
+	PolacaInversa elemento_apuntado = elementito -> elemento;
+	//el elemento apuntando tiene que apuntar al ultimo elemento agregado en la polaca
+	elemento_apuntado -> operador = etiqueta;
+}
+

@@ -8,7 +8,7 @@
 //ponemos que un elemento de la pila tiene un apuntador a struct_ElemetoPila, que es lo mismo a ElementoPila
 typedef struct struct_ElementoPila{
     PolacaInversa elemento;
-    struct_ElementoPila* anterior;
+    struct struct_ElementoPila* anterior;
 } *ElementoPila;
 
 //typedef define el tipo de "*Pila"
