@@ -406,12 +406,12 @@ void fin_if(){
 	char* etiqueta = (char*) malloc(9);
 	//sprintf guarda en el primer parametro el resto de las cosas
 	//%3.d significa que va a poner un entero de 3 digitos. Ej:001, 002...
-	sprintf(etiqueta,"etqif%3.d",contadorIF);
+	sprintf(etiqueta,"etqif%03.d",contadorIF);
 	contadorIF++;
 	insertar_operador_polaca(etiqueta);
 
 	//recupero el topecito de la pila	
-	ElementoPila elementito = desapilar(pila);
+	ElementoPila elementito = desapilar(pila_if);
 	//el elemento al que apunta el tope es:
 	PolacaInversa elemento_apuntado = elementito -> elemento;
 	//el elemento apuntando tiene que apuntar al ultimo elemento agregado en la polaca
