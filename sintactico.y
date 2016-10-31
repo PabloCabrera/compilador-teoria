@@ -20,6 +20,7 @@ char *EspacioVacio = "nulo";
 Pila pila_if;
 Pila pila_while;
 int contadorIF=0;
+char* etiqueta;
 
 /* Funciones definidas mas adelante */
 char* concat_ids(char* lista_ids, char* ultimo_id);
@@ -33,6 +34,8 @@ PolacaInversa obtener_subindice_polaca();
 void agregar_elemento_pila_if(PolacaInversa subindice);
 void insertar_condicion(char* dato);
 void fin_if();
+void fin_if_else();
+void fin_else();
 %}
 %token COMA
 %token OP_MAYOR
@@ -127,17 +130,16 @@ list_sentencias :  list_sentencias sent ;
 
 sent : sent_asignacion;
 sent :  sent_write ;
-sent :  sent_if ;
 sent :  sent_if_else ;
+sent :  sent_if ;
 sent :  sent_while;
 
 // write "hola mundo" ;
 sent_write : RESERVADA_WRITE CONSTANTE_STRING FIN_SENTENCIA ;
 sent_write :  RESERVADA_WRITE IDENTIFICADOR FIN_SENTENCIA;
 
+sent_if_else : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_if_else();} RESERVADA_ELSE INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_else();};
 sent_if : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_if();};
-//sent_if_else : sent_if RESERVADA_ELSE INICIO_BLOQUE list_sentencias FIN_BLOQUE;
-sent_if_else : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {} RESERVADA_ELSE INICIO_BLOQUE list_sentencias FIN_BLOQUE;
 
 sent_while :RESERVADA_WHILE INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE;
 
@@ -261,7 +263,8 @@ int main (int argc, char *argv[])
 		printf("\n No se puede abrir el archivo: %s\n", argv[1]);
 	}
 	else 
-	{
+	{	
+		etiqueta = (char*) malloc(9);
 		yyparse();
 		ts_escribir_html("tabla_simbolos.html");
 	}
@@ -402,8 +405,6 @@ void agregar_elemento_pila_if(PolacaInversa subindice){
 }
 
 void fin_if(){
-	//8 caracteres + caracter de fin de cadena
-	char* etiqueta = (char*) malloc(9);
 	//sprintf guarda en el primer parametro el resto de las cosas
 	//%3.d significa que va a poner un entero de 3 digitos. Ej:001, 002...
 	sprintf(etiqueta,"etqif%03.d",contadorIF);
@@ -418,3 +419,37 @@ void fin_if(){
 	elemento_apuntado -> operador = etiqueta;
 }
 
+void fin_if_else(){
+	//recupero el tope de la pila	
+	ElementoPila tope = desapilar(pila_if);
+	//creo la etiqueta
+	sprintf(etiqueta,"etqif%03.d",contadorIF);
+	//la apilo
+	ElementoPila e = nuevo_elemento(obtener_subindice_polaca());
+	apilar(pila_if,e);
+	//la inserto en la polaca
+	insertar_operador_polaca(etiqueta);
+	//inserto BI
+	insertar_condicion("BI");
+	
+	//Creo una nueva etiqueta
+	sprintf(etiqueta,"etqif%03.d",contadorIF);
+	insertar_operador_polaca(etiqueta);
+	//Uso el tope que guarde en la variable tope :P
+	PolacaInversa elemento_apuntado = tope -> elemento;
+	//el elemento apuntando tiene que apuntar al ultimo elemento agregado en la polaca
+	elemento_apuntado -> operador = etiqueta;
+}
+
+void fin_else(){
+	//creo etiqueta
+	sprintf(etiqueta,"etqif%03.d",contadorIF);
+	insertar_operador_polaca(etiqueta);
+
+	//recupero el tope de la pila	
+	ElementoPila tope = desapilar(pila_if);
+	//el elemento al que apunta el tope es:
+	PolacaInversa elemento_apuntado = tope -> elemento;
+	//el elemento apuntando tiene que apuntar al ultimo elemento agregado en la polaca
+	elemento_apuntado -> operador = etiqueta;
+}
