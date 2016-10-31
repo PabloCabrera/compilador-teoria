@@ -20,6 +20,7 @@ char *EspacioVacio = "nulo";
 Pila pila_if;
 Pila pila_while;
 int contadorIF=0;
+int contadorWHILE=0;
 
 /* Funciones definidas mas adelante */
 char* concat_ids(char* lista_ids, char* ultimo_id);
@@ -33,6 +34,8 @@ PolacaInversa obtener_subindice_polaca();
 void agregar_elemento_pila_if(PolacaInversa subindice);
 void insertar_condicion(char* dato);
 void fin_if();
+void inicio_while();
+void fin_while();
 %}
 %token COMA
 %token OP_MAYOR
@@ -122,13 +125,13 @@ tipo : RESERVADA_FLOAT {$$ = FLOAT;};
 tipo :  RESERVADA_INTEGER {$$ = INTEGER;} ;
 tipo :  RESERVADA_STRING {$$ = STRING;};
 
-list_sentencias : sent ;
+list_sentencias : sent;
 list_sentencias :  list_sentencias sent ;
 
 sent : sent_asignacion;
-sent :  sent_write ;
-sent :  sent_if ;
-sent :  sent_if_else ;
+sent :  sent_write;
+sent :  sent_if;
+sent :  sent_if_else;
 sent :  sent_while;
 
 // write "hola mundo" ;
@@ -139,7 +142,7 @@ sent_if : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE 
 //sent_if_else : sent_if RESERVADA_ELSE INICIO_BLOQUE list_sentencias FIN_BLOQUE;
 sent_if_else : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {} RESERVADA_ELSE INICIO_BLOQUE list_sentencias FIN_BLOQUE;
 
-sent_while :RESERVADA_WHILE INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE;
+sent_while : RESERVADA_WHILE {inicio_while();} INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE { fin_while(); };
 
 //------------------------------------ operaciones matematicas y asignaciones;
 // palabra : 3*4 ;
@@ -416,5 +419,41 @@ void fin_if(){
 	PolacaInversa elemento_apuntado = elementito -> elemento;
 	//el elemento apuntando tiene que apuntar al ultimo elemento agregado en la polaca
 	elemento_apuntado -> operador = etiqueta;
+}
+
+void inicio_while(){
+	// Insertamos una para que pueda volver a evaluar la condicion
+	// Se deja vacia por ahora porque el nombre se asigna despues
+	insertar_etiqueta_polaca(EspacioVacio);
+
+	// Apilamos el elemento que acabamos de insertar para posteriormente poder asignarle el nombre a la etiqueta
+	PolacaInversa subindice = obtener_subindice_polaca();
+	agregar_elemento_pila_if(subindice);
+
+}
+
+void fin_while(){
+	/* Esta etiqueta sera para volver a evaluar la condicion */
+	char *strEtqCondicion = (char*) malloc(12);
+	sprintf(strEtqCondicion, "cndwhile%03.d", contadorWHILE);
+	contadorWHILE++;
+
+	/* Esta etiqueta sera para salir si la condicion es falsa */
+	char *strEtqSalida = (char*) malloc(12);
+	sprintf(strEtqSalida, "etqwhile%03.d", contadorWHILE);
+	contadorWHILE++;
+	
+	/* Establecemos los valores de las etiquetas*/
+	PolacaInversa saltoPorFalso = desapilar(pila_if) -> elemento;
+	PolacaInversa etiquetaCondicion = desapilar(pila_if) -> elemento;
+	saltoPorFalso -> operador = strEtqSalida;
+	etiquetaCondicion -> operador = strEtqCondicion;
+
+	/* Insertamos un salto incondicional para que vuelva al inicio del bucle despues de ejecutar un bloque */
+	insertar_salto_polaca(strEtqCondicion);
+	insertar_operador_polaca("BI");
+
+	/* Insertamos la etiqueta a donde se llegara cuando la condicion es falsa */
+	insertar_etiqueta_polaca(strEtqSalida);
 }
 
