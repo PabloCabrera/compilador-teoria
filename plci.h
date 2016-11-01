@@ -16,7 +16,7 @@ typedef enum {
 typedef struct plci_elemento {
 	PolacaInversaTipoElemento tipo;
 	struct ts_entrada *simbolo;
-	char *operador;
+	char *texto;
 	struct plci_elemento *siguiente;
 } *PolacaInversa;
 

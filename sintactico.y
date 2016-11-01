@@ -18,7 +18,6 @@ int contador_polacas;
 PolacaInversa polaca_actual;
 char *EspacioVacio = "nulo";
 Pila pila_if;
-Pila pila_while;
 int contadorIF=0;
 int contadorWHILE=0;
 
@@ -366,7 +365,7 @@ void comprobar_tipos_asignacion(TipoDato tipo1, TipoDato tipo2){
 void insertar_condicion(char* dato) {
 	insertar_operador_polaca("CMP");
 	//insertamos un lugar vacio, este va a tener q apuntar a el principio del ELSE o el FIN del IF
-	insertar_operador_polaca(EspacioVacio); //constante global
+	insertar_salto_polaca(EspacioVacio); //constante global
 
 	//ahora tendriamos que obtener el subindice de la lista polaca en este momento
 	//y guardarlo en otra lista, para q cuando lleguemos al FIN/ELSE pongamos el valor q esta en la lista en el espacio vacio
@@ -418,7 +417,7 @@ void fin_if(){
 	//el elemento al que apunta el tope es:
 	PolacaInversa elemento_apuntado = elementito -> elemento;
 	//el elemento apuntando tiene que apuntar al ultimo elemento agregado en la polaca
-	elemento_apuntado -> operador = etiqueta;
+	elemento_apuntado -> texto = etiqueta;
 }
 
 void fin_if_else(){
@@ -443,7 +442,7 @@ void fin_if_else(){
 	//Uso el tope que guarde en la variable tope :P
 	PolacaInversa elemento_apuntado = tope -> elemento;
 	//el elemento apuntando tiene que apuntar al ultimo elemento agregado en la polaca
-	elemento_apuntado -> operador = etiqueta;
+	elemento_apuntado -> texto = etiqueta;
 }
 
 void fin_else(){
@@ -458,7 +457,7 @@ void fin_else(){
 	//el elemento al que apunta el tope es:
 	PolacaInversa elemento_apuntado = tope -> elemento;
 	//el elemento apuntando tiene que apuntar al ultimo elemento agregado en la polaca
-	elemento_apuntado -> operador = etiqueta;
+	elemento_apuntado -> texto = etiqueta;
 }
 
 void inicio_while(){
@@ -486,8 +485,8 @@ void fin_while(){
 	/* Establecemos los valores de las etiquetas*/
 	PolacaInversa saltoPorFalso = desapilar(pila_if) -> elemento;
 	PolacaInversa etiquetaCondicion = desapilar(pila_if) -> elemento;
-	saltoPorFalso -> operador = strEtqSalida;
-	etiquetaCondicion -> operador = strEtqCondicion;
+	saltoPorFalso -> texto = strEtqSalida;
+	etiquetaCondicion -> texto = strEtqCondicion;
 
 	/* Insertamos un salto incondicional para que vuelva al inicio del bucle despues de ejecutar un bloque */
 	insertar_salto_polaca(strEtqCondicion);
