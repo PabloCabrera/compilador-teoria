@@ -37,6 +37,7 @@ void fin_if_else();
 void fin_else();
 void inicio_while();
 void fin_while();
+void crear_intermedio();
 %}
 %token COMA
 %token OP_MAYOR
@@ -73,7 +74,7 @@ void fin_while();
 %token <stringValue> IDENTIFICADOR
 %token <stringValue> CONSTANTE_REAL
 %token <stringValue> CONSTANTE_ENTERA
-%token CONSTANTE_STRING
+%token <stringValue> CONSTANTE_STRING
 %token OP_IGUAL
 %token OP_MAYOR_IGUAL
 %token OP_MENOR_IGUAL
@@ -101,7 +102,7 @@ void fin_while();
 %%
 
 //---------------------------- estructura general;
-programa : prog {printf ("Polaca Inversa:"); PolacaInversa_print(polaca_actual); printf ("\n");};
+programa : prog {printf ("Polaca Inversa:"); PolacaInversa_print(polaca_actual); printf ("\n"); crear_intermedio(); };
 
 prog : seccion_declaracion seccion_sentencias ;
 prog :  list_write;
@@ -136,8 +137,10 @@ sent :  sent_if ;
 sent :  sent_while;
 
 // write "hola mundo" ;
-sent_write : RESERVADA_WRITE CONSTANTE_STRING FIN_SENTENCIA ;
-sent_write :  RESERVADA_WRITE IDENTIFICADOR FIN_SENTENCIA;
+sent_write : RESERVADA_WRITE CONSTANTE_STRING FIN_SENTENCIA{
+	insertar_simbolo_polaca(ts_buscar_constante($2));
+	insertar_operador_polaca("write");
+};
 
 sent_if_else : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_if_else();} RESERVADA_ELSE INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_else();};
 sent_if : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_if();};
@@ -496,3 +499,26 @@ void fin_while(){
 	insertar_etiqueta_polaca(strEtqSalida);
 }
 
+void crear_intermedio() {
+	FILE *fichero;
+	fichero = fopen("intermedio.txt","w");
+	PolacaInversa polaquita = polaca_actual;
+	while (polaquita!=NULL){
+		switch (polaquita -> tipo) {
+			case OPERADOR:
+				fprintf(fichero, "%s ", polaquita -> texto);
+				break;
+			case ETIQUETA:
+				fprintf(fichero, "%s ", polaquita -> texto);
+				break;
+			case SALTO:
+				fprintf(fichero, "%s ", polaquita -> texto);
+				break;
+			case SIMBOLO:
+				fprintf(fichero, "%s ", polaquita -> simbolo -> nombre);
+				break;
+		}
+		polaquita = polaquita -> siguiente;
+	}
+	fclose(fichero);
+}

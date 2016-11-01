@@ -89,7 +89,7 @@ COMENTARIO ({INICIO_COMENTARIO}({LETRA}|{ESPACIO}|{DIGITO})*{FIN_COMENTARIO})
 {FIN_SENTENCIA} { return  FIN_SENTENCIA;}
 {CONSTANTE_REAL}	{ verificar_cota_real(yytext); return  CONSTANTE_REAL; }
 {CONSTANTE_ENTERA}	{ verificar_cota_entera(yytext); return  CONSTANTE_ENTERA;  }
-{CONSTANTE_STRING}	{ ts_guardar_simbolo("const_string", yytext); return  CONSTANTE_STRING; }
+{CONSTANTE_STRING}	{ yylval.stringValue=strdup( yytext ); ts_guardar_simbolo("const_string", yytext); return  CONSTANTE_STRING; }
 {OP_IGUAL} { return  OP_IGUAL;}
 {OP_DISTINTO} { return  OP_DISTINTO;}
 {OP_MAYOR} { return  OP_MAYOR;}
