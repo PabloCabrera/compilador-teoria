@@ -42,7 +42,7 @@ void PolacaInversa_append_operador (PolacaInversa polaca, char *operador) {
 void PolacaInversa_append_etiqueta (PolacaInversa polaca, char *etiqueta) {
 	PolacaInversa tail;
 	if (polaca-> siguiente) {
-		PolacaInversa_append_operador (polaca-> siguiente, etiqueta);
+		PolacaInversa_append_etiqueta (polaca-> siguiente, etiqueta);
 	} else {
 		tail = (PolacaInversa) malloc (sizeof (struct plci_elemento));
 		tail-> tipo = ETIQUETA;
@@ -56,7 +56,7 @@ void PolacaInversa_append_etiqueta (PolacaInversa polaca, char *etiqueta) {
 void PolacaInversa_append_salto (PolacaInversa polaca, char *etiqueta) {
 	PolacaInversa tail;
 	if (polaca-> siguiente) {
-		PolacaInversa_append_operador (polaca-> siguiente, etiqueta);
+		PolacaInversa_append_salto (polaca-> siguiente, etiqueta);
 	} else {
 		tail = (PolacaInversa) malloc (sizeof (struct plci_elemento));
 		tail-> tipo = SALTO;
@@ -68,19 +68,21 @@ void PolacaInversa_append_salto (PolacaInversa polaca, char *etiqueta) {
 }
 
 void PolacaInversa_print (PolacaInversa polaca){
-	char *imprimir = NULL;
 
 	switch (polaca-> tipo) {
 		case OPERADOR:
+			printf("[%s] ", polaca -> operador);
+			break;
 		case ETIQUETA:
+			printf("<%s> ", polaca -> operador);
+			break;
 		case SALTO:
-			imprimir = polaca -> operador;
+			printf("[%s] ", polaca -> operador);
 			break;
 		case SIMBOLO:
-			imprimir = polaca -> simbolo-> nombre;
+			printf("[%s] ", polaca -> simbolo -> nombre);
 			break;
 	}
-	printf ("[%s] ", imprimir);
 
 	if (polaca-> siguiente != NULL) {
 		PolacaInversa_print (polaca-> siguiente);
