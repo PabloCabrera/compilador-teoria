@@ -413,7 +413,7 @@ void fin_if(){
 	//%3.d significa que va a poner un entero de 3 digitos. Ej:001, 002...
 	sprintf(etiqueta,"etqif%03.d",contadorIF);
 	contadorIF++;
-	insertar_salto_polaca(etiqueta);
+	insertar_etiqueta_polaca(etiqueta);
 
 	//recupero el topecito de la pila	
 	ElementoPila elementito = desapilar(pila_if);
