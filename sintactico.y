@@ -8,6 +8,7 @@
 #include "y.tab.h"
 #include "pila.h"
 #include "pila.c"
+#include "assembler2.c"
 
 int yystopparser=0;
 FILE *yyin;
@@ -262,6 +263,7 @@ condicion_menor_igual : IDENTIFICADOR OP_MENOR_IGUAL exp_mat {
 %%
 int main (int argc, char *argv[]) 
 {
+	FILE *asmtxt = fopen ("asm.txt", "w");
 	if ((yyin = fopen(argv[1], "rt")) == NULL)
 	{
 		printf("\n No se puede abrir el archivo: %s\n", argv[1]);
@@ -270,6 +272,7 @@ int main (int argc, char *argv[])
 	{	
 		yyparse();
 		ts_escribir_html("tabla_simbolos.html");
+		escribir_asm (polaca_actual, asmtxt);
 	}
 	fclose(yyin);
 	return(0);
