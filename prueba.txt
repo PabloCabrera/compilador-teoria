@@ -23,7 +23,6 @@ while (contador <= 92) {
 }
 
 write "La suma es: ";
-write suma;
 
 if (actual > 2){
 	write "2 > 3";
@@ -46,3 +45,4 @@ if (actual < 3){
 }else{
 	actual:333.3333;
 }
+-/hola/-
