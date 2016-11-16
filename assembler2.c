@@ -59,3 +59,58 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 	}
 	
 }
+
+
+void crearDataAssembler(struct ts_entrada* tabla, FILE* fichero){
+	//escribo toda la cabecera del assembler
+	printf("include macros2.asm \n include number.asm \n \n .MODEL	LARGE \n .386 \n .STACK 200h \n \n MAXTEXTSIZE equ 50 \n \n .DATA \n \n");
+	//fprintf(fichero,"%s","include macros2.asm \n include number.asm \n \n .MODEL	LARGE \n .386 \n .STACK 200h \n \n MAXTEXTSIZE equ 50 \n \n .DATA \n \n");
+	int i=0;
+	for(i; i< TS_TAMANIO_TABLA_SIMBOLOS;i++){
+		//si el elemento tiene de nombre 0 es
+		if(strcmp(tabla[i].nombre,"")!=0){
+			printf("\t %s ", tabla[i].nombre);
+			//fprintf(fichero,"\t %s ", tabla[i].nombre);
+			switch(tabla[i].tipo){
+				case 1:	//si es integer
+					printf("dd ");
+					//fprintf(fichero,"dd ");
+					if( strcmp(tabla[i].valor,"-")==0 ){
+						//si no tiene valor
+						printf("? ");
+						//fprintf(fichero,"? ");
+					}else{
+						printf("%s.0 ",tabla[i].valor);
+						//fprintf(fichero,"%s.0 ",tabla[i].valor);
+					}
+					break;
+				case 3:	//si es string
+					printf("db ");
+					if( strcmp(tabla[i].valor,"-")==0 ){
+						//si no tiene valor
+						printf("? ");
+						//fprintf(fichero,"? ");
+					}else{
+						printf("%s dup(?),'$'",tabla[i].valor);
+						//fprintf(fichero,"%s dup(?),'$'",tabla[i].valor);
+					}
+					break;
+				default: //si es float u otra cosa
+					printf("dd ");
+					if( strcmp(tabla[i].valor,"-")==0 ){
+						//si no tiene valor
+						printf("? ");
+						//fprintf(fichero,"? ");
+					}else{
+						printf("%s ",tabla[i].valor);
+						//fprintf(fichero,"%s ",tabla[i].valor);
+					}
+					break;
+			}
+			printf("\n");
+			//fprintf(fichero,"%s","\n");
+		}
+	}
+	printf("\n \n .CODE \n \n START: \n");
+	//fprintf(fichero,"%s","\n \n .CODE \n \n START: \n");
+}
