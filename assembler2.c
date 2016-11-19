@@ -87,7 +87,6 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 void crearDataAssembler(struct ts_entrada* tabla, FILE* fichero){
 	//escribo toda la cabecera del assembler
 	fprintf(fichero,"%s","include macros2.asm \ninclude number.asm \n \n.MODEL	LARGE \n.386 \n.STACK 200h \n \nMAXTEXTSIZE equ 50 \n \n.DATA \n \n");
-	fprintf(fichero,"%s",".CODE\n\nSTART:\n\tMOV AX, @DATA\n\tMOV DS, AX\n\tMOV ES, AX\n");
 	int i=0;
 	for(i; i< TS_TAMANIO_TABLA_SIMBOLOS;i++){
 		//si el elemento tiene de nombre 0 es
@@ -123,4 +122,5 @@ void crearDataAssembler(struct ts_entrada* tabla, FILE* fichero){
 			fprintf(fichero,"%s","\n");
 		}
 	}
+	fprintf(fichero,"%s","\n.CODE\n\nSTART:\n\tMOV AX, @DATA\n\tMOV DS, AX\n\tMOV ES, AX\n");
 }
