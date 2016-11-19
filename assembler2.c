@@ -1,6 +1,6 @@
 #define son_iguales(x, y) (strcmp((x),(y))==0)
 void escribir_asm (PolacaInversa polaca, FILE *file);
-char* etiqueta_salto;
+char *etiqueta_salto, *variable_asignacion;
 void escribir_asm (PolacaInversa polaca, FILE *file) {
 	
 	switch (polaca-> tipo) {
@@ -16,6 +16,9 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 				
 			} else if (son_iguales(polaca-> texto, "/")) {
 				fprintf(file, "\tFDIV\n" );
+				
+			} else if (son_iguales(polaca-> texto, ":")) {
+				fprintf(file, "\tFSTP %s\n", variable_asignacion );
 				
 			} else if (son_iguales(polaca-> texto, "write")) {
 				fprintf(file, "\tMOV AH, 9\n" );
@@ -54,10 +57,21 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 			etiqueta_salto = polaca -> texto;
 			break;
 		case SIMBOLO:
-			if (polaca-> simbolo -> tipo == STRING){
-				fprintf(file, "\tMOV DX,OFFSET %s\n", polaca-> simbolo-> nombre);	
+			if(
+				/* Si el siguiente elemento es un operador de asignacion */
+				(polaca-> siguiente != NULL)
+				&& (polaca-> siguiente-> tipo == OPERADOR)
+				&& (son_iguales(polaca-> siguiente->  texto, ":"))
+			) {
+				/* Guardamos el nombre del simbolo en una variable auxiliar */
+				variable_asignacion = polaca-> simbolo-> nombre;
 			} else {
-				fprintf(file, "\tFLD %s\n" , polaca -> simbolo -> nombre);
+				/* Sino lo apilamos en el coprocesador */
+				if (polaca-> simbolo -> tipo == STRING){
+					fprintf(file, "\tMOV DX,OFFSET %s\n", polaca-> simbolo-> nombre);	
+				} else {
+					fprintf(file, "\tFLD %s\n" , polaca -> simbolo -> nombre);
+				}
 			}
 
 			break;
