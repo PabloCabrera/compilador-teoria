@@ -1,0 +1,71 @@
+DECVAR
+	maximas_repeticiones,contador: Integer;
+	w,x,y,z,limite : Integer;
+ENDDEC
+
+maximas_repeticiones : 20;
+contador : 0;
+
+write "esta es un while varios ifs anidados";
+write "   ";
+
+while (contador<maximas_repeticiones){
+	if(contador==1){
+		write "soy la primer iteracion!";
+	}else{
+		if(contador<(maximas_repeticiones/2)){
+			if(contador<(maximas_repeticiones/4)){
+				write "voy por el primer cuarto!";
+			}else{
+				write "voy por el segundo cuarto!";
+			}
+		}else{
+			if(contador==(maximas_repeticiones/2)){
+				write "voy por la mitad exactamente!";
+			}else{
+				if(contador>(maximas_repeticiones/4)){
+					write "voy por el tercer cuarto!";
+				}else{
+					if(contador==(maximas_repeticiones-1)){
+						write "ultimaaaaaa :D";
+					}else{
+						write "voy por le ultimo cuarto! :0";
+					}
+				}
+			}
+		}
+	}
+	contador:contador+1;
+}
+
+write "ya termine  ";
+
+write "ahora voy a hacer varios while anidados";
+
+w:1;
+x:1;
+y:1;
+z:1;
+limite: 3;
+while(w<limite){
+	write "w";
+	while(x<limite){
+		write "....x";
+		while(y<limite){
+			write "........y";
+			while(z<limite){
+				write "................z";
+				z:z+1;
+			}
+			z:1;
+			y:y+1;
+		}
+		y:1;
+		z:1;
+		x:x+1;
+	}
+	x:1;
+	y:1;
+	z:1;
+	w:w+1;
+}

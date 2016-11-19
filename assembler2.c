@@ -108,7 +108,7 @@ void crearDataAssembler(struct ts_entrada* tabla, FILE* fichero){
 						//si no tiene valor
 						fprintf(fichero,"? ");
 					}else{
-						fprintf(fichero,"%s dup(?),'$'",tabla[i].valor);
+						fprintf(fichero,"%s ",tabla[i].valor);
 					}
 					break;
 				default: //si es float u otra cosa
