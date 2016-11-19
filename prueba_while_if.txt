@@ -1,0 +1,20 @@
+DECVAR
+	elefantes: Integer;
+	tela_resiste: Integer;
+ENDDEC
+
+-/ Si tela_resiste es igual a 0 es true, si es 1 es false /-
+
+tela_resiste: 0;
+elefantes: 1;
+
+while (tela_resiste == 0){
+	if(elefantes <= 10){
+		write "Un elefante se columpiaba sobre la tela de una araña, como veian que resistia fueron a llamar a otro elefante..";
+		-/ Llamamos a otro elefenate /-
+		elefantes: elefantes + 1;
+	}else{
+		write "La tela no resiste mas :( ";
+		tela_resiste: 1;	
+	}
+}
