@@ -91,10 +91,6 @@ void PolacaInversa_print (PolacaInversa polaca){
 	}
 }
 
-void PolacaInversa_escribir_html (PolacaInversa polaca, const char* nombre_archivo) {
-	/* Implementar despues */
-}
-
 void PolacaInversa_free(PolacaInversa polaca) {
 	if (polaca-> siguiente != NULL) {
 		PolacaInversa_free(polaca-> siguiente);

@@ -16,12 +16,17 @@ const char *TipoDato_names[4] = {
 };
 
 bool ts_verificar_existencia(char *lexema){
+
 	int j;
 	char destino1[500];
 	strcpy(destino1,"_");
 	strcat(destino1,lexema);
 	for (j=0; j < ts_num_simbolos; j++) {
-		if ((strcmp(lexema, ts_tabla_simbolos[j].nombre) == 0)||(strcmp(destino1, ts_tabla_simbolos[j].nombre) == 0)) {
+		if (
+			(strcmp(lexema, ts_tabla_simbolos[j].nombre) == 0) /* para variables */
+			||(strcmp(destino1, ts_tabla_simbolos[j].nombre) == 0) /* para constantes numericas */
+			||((lexema[0]=='"') && strcmp(lexema, ts_tabla_simbolos[j].valor) == 0) /* para constantes string */
+			) {
 			return true;
 		}
 	}
@@ -112,10 +117,23 @@ void ts_guardar_simbolo(char *token, char *lexema){
 	
 		/* Si es una constante string guardo lexema y longitud*/
 		if (strcmp(token, "const_string") == 0) {
-			strcpy(ts_tabla_simbolos[ts_num_simbolos].nombre,lexema);
 			ts_tabla_simbolos[ts_num_simbolos].tipo=STRING;
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].valor,lexema);
 			ts_tabla_simbolos[ts_num_simbolos].longitud = strlen(lexema)-2;
+			int i;
+			char c;
+			strcpy(destino, "s_");
+			for (i=2; i < strlen (lexema); i++) {
+				c = lexema[i-1];
+				if ((c>='A' && c<='Z') || (c>='a' && c<='z') || (c>='0' && c<='9')) {
+					destino[i]=c;
+				} else {
+					destino[i]='_';
+				}
+
+			}
+			destino[i] = '\0';
+			strcpy (ts_tabla_simbolos[ts_num_simbolos].nombre, destino);
 		}
 	
 		
@@ -192,19 +210,14 @@ struct ts_entrada *ts_buscar_identificador (char *nombre) {
 }
 
 struct ts_entrada *ts_buscar_constante (char *valor) {
+	int pos_ts = 0;
 	struct ts_entrada *encontrado = NULL;
 
-	if (valor[0] == '"') {
-	/* Si empieza con comilla es un string, en este caso el identificador es igual al valor */
-		encontrado = ts_buscar_identificador (valor);
-	} else {
-		/* Sino es un Integer o Float, en ese caso tenemos que agregarle un _ al nombre */
-		char *nombre = malloc (strlen (valor) + 2);
-		nombre[0] = '_';
-		nombre[1] = '\0';
-		strcat (nombre, valor);
-		encontrado= ts_buscar_identificador(nombre);
-
+	while (encontrado == NULL && pos_ts < TS_TAMANIO_TABLA_SIMBOLOS) {
+		if (strcmp (valor, ts_tabla_simbolos[pos_ts].valor) == 0) {
+			encontrado = &(ts_tabla_simbolos[pos_ts]);
+		}
+		pos_ts++;
 	}
 
 	return encontrado;

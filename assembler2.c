@@ -1,8 +1,7 @@
-#define son_iguales(x, y) (strcmp(x,y)==0)
+#define son_iguales(x, y) (strcmp((x),(y))==0)
 void escribir_asm (PolacaInversa polaca, FILE *file);
 char* etiqueta_salto;
 void escribir_asm (PolacaInversa polaca, FILE *file) {
-	
 	
 	switch (polaca-> tipo) {
 		case OPERADOR:

@@ -275,6 +275,7 @@ int main (int argc, char *argv[])
 		crearDataAssembler(ts_tabla_simbolos,asmtxt);
 		escribir_asm (polaca_actual, asmtxt);
 	}
+	fclose (asmtxt);
 	fclose(yyin);
 	return(0);
 }
