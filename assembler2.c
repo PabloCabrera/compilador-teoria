@@ -20,6 +20,16 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 			} else if (son_iguales(polaca-> texto, "write")) {
 				fprintf(file, "\tMOV AH, 9\n" );
 				fprintf(file, "\tINT 21H\n" );
+
+			} else if (son_iguales(polaca-> texto, "BI")) {
+				fprintf(file,"\tJMP %s\n",etiqueta_salto);
+			
+
+			} else if (son_iguales(polaca-> texto, "CMP")) {
+				fprintf(file,"\tFCOMP\n");
+				fprintf(file,"\tFSTSW AX\n");
+				fprintf(file,"\tFWAIT\n");
+				fprintf(file,"\tSAHF\n");
 			
 			} else if(son_iguales(polaca-> texto,"BLE")){
 				fprintf(file,"\tJLE %s\n",etiqueta_salto);
