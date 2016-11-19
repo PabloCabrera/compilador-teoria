@@ -415,7 +415,7 @@ void fin_if(){
 	char *etiqueta = (char*) malloc (9);
 	//sprintf guarda en el primer parametro el resto de las cosas
 	//%3.d significa que va a poner un entero de 3 digitos. Ej:001, 002...
-	sprintf(etiqueta,"etqif%03.d",contadorIF);
+	sprintf(etiqueta,"etqif%0.3d",contadorIF);
 	contadorIF++;
 	insertar_etiqueta_polaca(etiqueta);
 
@@ -432,7 +432,7 @@ void fin_if_else(){
 	//recupero el tope de la pila	
 	ElementoPila tope = desapilar(pila_if);
 	//creo la etiqueta
-	sprintf(etiqueta,"etqif%03.d",contadorIF);
+	sprintf(etiqueta,"etqif%0.3d",contadorIF);
 	contadorIF++;
 	//la inserto en la polaca
 	insertar_salto_polaca(etiqueta);
@@ -443,7 +443,7 @@ void fin_if_else(){
 	insertar_operador_polaca("BI");
 	
 	//Creo una nueva etiqueta
-	sprintf(etiqueta,"etqif%03.d",contadorIF);
+	sprintf(etiqueta,"etqif%0.3d",contadorIF);
 	contadorIF++;
 	insertar_etiqueta_polaca(etiqueta);
 	//Uso el tope que guarde en la variable tope :P
@@ -455,7 +455,7 @@ void fin_if_else(){
 void fin_else(){
 	//creo etiqueta
 	char *etiqueta = (char*) malloc(9);
-	sprintf(etiqueta,"etqif%03.d",contadorIF);
+	sprintf(etiqueta,"etqif%0.3d",contadorIF);
 	contadorIF++;
 	insertar_etiqueta_polaca (etiqueta);
 
@@ -481,12 +481,12 @@ void inicio_while(){
 void fin_while(){
 	/* Esta etiqueta sera para volver a evaluar la condicion */
 	char *strEtqCondicion = (char*) malloc(12);
-	sprintf(strEtqCondicion, "cndwhile%03.d", contadorWHILE);
+	sprintf(strEtqCondicion, "cndwhile%0.3d", contadorWHILE);
 	contadorWHILE++;
 
 	/* Esta etiqueta sera para salir si la condicion es falsa */
 	char *strEtqSalida = (char*) malloc(12);
-	sprintf(strEtqSalida, "etqwhile%03.d", contadorWHILE);
+	sprintf(strEtqSalida, "etqwhile%0.3d", contadorWHILE);
 	contadorWHILE++;
 	
 	/* Establecemos los valores de las etiquetas*/
