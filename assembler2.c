@@ -44,10 +44,10 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 				fprintf(file,"\tJGE %s\n",etiqueta_salto);
 			
 			} else if(son_iguales(polaca-> texto,"BLT")){
-				fprintf(file,"\tJLT %s\n",etiqueta_salto);
+				fprintf(file,"\tJL %s\n",etiqueta_salto);
 			
 			} else if(son_iguales(polaca-> texto,"BGT")){
-				fprintf(file,"\tJGT %s\n",etiqueta_salto);
+				fprintf(file,"\tJG %s\n",etiqueta_salto);
 			}
 			break;
 		case ETIQUETA:
@@ -86,7 +86,7 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 
 void crearDataAssembler(struct ts_entrada* tabla, FILE* fichero){
 	//escribo toda la cabecera del assembler
-	fprintf(fichero,"%s","include macros2.asm \ninclude number.asm \n \n.MODEL	LARGE \n.386 \n.STACK 200h \n \nMAXTEXTSIZE equ 50 \n \n.DATA \n \n");
+	fprintf(fichero,"%s",".MODEL	LARGE \n.386 \n.STACK 200h \n \nMAXTEXTSIZE equ 50 \n \n.DATA \n \n");
 	int i=0;
 	for(i; i< TS_TAMANIO_TABLA_SIMBOLOS;i++){
 		//si el elemento tiene de nombre 0 es
