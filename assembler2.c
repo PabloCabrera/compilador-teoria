@@ -103,7 +103,7 @@ void crearDataAssembler(struct ts_entrada* tabla, FILE* fichero){
 					}
 					break;
 				case 3:	//si es string
-					fprintf(fichero,"dw ");
+					fprintf(fichero,"db ");
 					if( strcmp(tabla[i].valor,"-")==0 ){
 						//si no tiene valor
 						fprintf(fichero,"? ");
