@@ -22,7 +22,7 @@ struct ts_entrada {
 };
 
 void ts_guardar_simbolo(char *token, char *lexema);
-bool ts_verificar_existencia(char *lexema);
+bool ts_verificar_existencia(char *token, char *lexema);
 void ts_escribir_html(const char *nombre_archivo);
 void ts_establecer_tipo(char* lista_ids, TipoDato tipo);
 const char *TipoDato_toString(TipoDato tipo);

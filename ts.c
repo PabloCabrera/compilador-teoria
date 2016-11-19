@@ -5,6 +5,8 @@
 #include <string.h>
 #include "y.tab.h"
 
+#define streq(x,y) (strcmp((x),(y))==0)
+
 int ts_num_simbolos=0;
 // FILE *fp;
 
@@ -15,19 +17,23 @@ const char *TipoDato_names[4] = {
 	"String"
 };
 
-bool ts_verificar_existencia(char *lexema){
+
+bool ts_verificar_existencia(char *token, char *lexema){
 
 	int j;
-	char destino1[500];
-	strcpy(destino1,"_");
-	strcat(destino1,lexema);
-	for (j=0; j < ts_num_simbolos; j++) {
-		if (
-			(strcmp(lexema, ts_tabla_simbolos[j].nombre) == 0) /* para variables */
-			||(strcmp(destino1, ts_tabla_simbolos[j].nombre) == 0) /* para constantes numericas */
-			||((lexema[0]=='"') && strcmp(lexema, ts_tabla_simbolos[j].valor) == 0) /* para constantes string */
-			) {
-			return true;
+	if (streq (token, "identificador")){
+		// Si es un identificador, se busca por nombre en la ts
+		for (j=0; j < ts_num_simbolos; j++) {
+			if (streq(lexema, ts_tabla_simbolos[j].nombre)) {
+				return true;
+			}
+		}
+	} else {
+		// Si no es un identificador debe ser una constante, se busca por valor
+		for (j=0; j < ts_num_simbolos; j++) {
+			if (streq(lexema, ts_tabla_simbolos[j].valor)) {
+				return true;
+			}
 		}
 	}
 	return false;
@@ -83,7 +89,7 @@ void ts_escribir_html(const char *nombre_archivo) {
 
 void ts_guardar_simbolo(char *token, char *lexema){
 	char destino[500];
-	if (!ts_verificar_existencia(lexema)) {
+	if (!ts_verificar_existencia(token, lexema)) {
 		//fp = fopen("tabla_simbolos.txt","w");
 		/* Si es un identificador solo guardo el lexema */
 		if (strcmp(token, "identificador") == 0) {
@@ -97,7 +103,15 @@ void ts_guardar_simbolo(char *token, char *lexema){
 		/* Si es una constante real guardo lexema y valor*/
 		if (strcmp(token, "const_real") == 0) {
 			strcpy(destino,"_");
-			strcat(destino,lexema);
+			int index;
+			for (index=0; index < strlen(lexema); index++) {
+				if(lexema[index] == '.') {
+					destino[index+1] = '_';
+				} else {
+					destino[index+1] = lexema[index];
+				}
+			}
+			destino[index+1] = '\0';
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].nombre,destino);
 			ts_tabla_simbolos[ts_num_simbolos].tipo = FLOAT;
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].valor,lexema);
