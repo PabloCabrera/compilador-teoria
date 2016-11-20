@@ -274,6 +274,9 @@ int main (int argc, char *argv[])
 		ts_escribir_html("tabla_simbolos.html");
 		crearDataAssembler(ts_tabla_simbolos,asmtxt);
 		escribir_asm (polaca_actual, asmtxt);
+		fprintf(asmtxt, "\tMOV AH, 4Ch\n");
+		fprintf(asmtxt, "\tMOV AL, 00h\n");
+		fprintf(asmtxt, "\tINT 21h\n");
 		fprintf(asmtxt, "END START\n");
 	}
 	fclose (asmtxt);
