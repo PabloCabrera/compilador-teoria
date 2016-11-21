@@ -15,9 +15,9 @@ typedef enum enumTipoDato {
 } TipoDato;
  
 struct ts_entrada {
-        char nombre[100];
+        char nombre[512];
         TipoDato tipo;
-        char valor[100];
+        char valor[512];
         int longitud;
 };
 
