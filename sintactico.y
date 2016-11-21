@@ -277,6 +277,8 @@ int main (int argc, char *argv[])
 	{	
 		yyparse();
 		ts_escribir_html("tabla_simbolos.html");
+		fprintf(asmtxt, "include macros2.asm\n");
+		fprintf(asmtxt, "include number.asm\n"); 
 		crearDataAssembler(ts_tabla_simbolos,asmtxt);
 		escribir_asm (polaca_actual, asmtxt);
 		fprintf(asmtxt, "\tMOV AH, 4Ch\n");
