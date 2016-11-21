@@ -143,6 +143,11 @@ sent_write : RESERVADA_WRITE CONSTANTE_STRING FIN_SENTENCIA{
 	insertar_operador_polaca("write");
 };
 
+sent_write : RESERVADA_WRITE IDENTIFICADOR FIN_SENTENCIA{
+	insertar_simbolo_polaca(ts_buscar_identificador($2));
+	insertar_operador_polaca("write");
+};
+
 sent_if_else : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_if_else();} RESERVADA_ELSE INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_else();};
 sent_if : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_if();};
 
