@@ -9,10 +9,14 @@
 #include "y.tab.h"
 
 #define MAX_ENTERO "2147483647"
+#define MAX_LONGITUD_IDENTIFICADOR 64
+#define MAX_LONGITUD_CONSTANTE_STRING 499
 
 /* Funciones definidas mas abajo */
 void verificar_cota_entera(char *lexema);
 void verificar_cota_real(char *lexema);
+void verificar_largo_identificador(char *lexema);
+void verificar_largo_constante_string(char *lexema);
 
 FILE *yyin;
 char *yyltext;
@@ -84,12 +88,12 @@ COMENTARIO ({INICIO_COMENTARIO}(([^\/])|(\/[^-]))*{FIN_COMENTARIO})
 {RESERVADA_NULL} { return RESERVADA_NULL; }
 {RESERVADA_ELSE} { return RESERVADA_ELSE; }
 
-{IDENTIFICADOR}	{  ts_guardar_simbolo("identificador", yytext); yylval.stringValue=ts_buscar_identificador(yytext)->nombre;  return IDENTIFICADOR;}
+{IDENTIFICADOR}	{  verificar_largo_identificador(yytext); ts_guardar_simbolo("identificador", yytext); yylval.stringValue=ts_buscar_identificador(yytext)->nombre;  return IDENTIFICADOR;}
 {OP_ASIGNACION} { return  OP_ASIGNACION;}
 {FIN_SENTENCIA} { return  FIN_SENTENCIA;}
 {CONSTANTE_REAL}	{ verificar_cota_real(yytext); return  CONSTANTE_REAL; }
 {CONSTANTE_ENTERA}	{ verificar_cota_entera(yytext); return  CONSTANTE_ENTERA;  }
-{CONSTANTE_STRING}	{ yylval.stringValue=strdup( yytext ); ts_guardar_simbolo("const_string", yytext); return  CONSTANTE_STRING; }
+{CONSTANTE_STRING}	{ verificar_largo_constante_string(yytext); yylval.stringValue=strdup( yytext ); ts_guardar_simbolo("const_string", yytext); return  CONSTANTE_STRING; }
 {OP_IGUAL} { return  OP_IGUAL;}
 {OP_DISTINTO} { return  OP_DISTINTO;}
 {OP_MAYOR} { return  OP_MAYOR;}
@@ -162,5 +166,19 @@ void verificar_cota_entera(char *lexema){
 		}
 	}
 
+}
+
+void verificar_largo_identificador (char *lexema){
+	if (strlen(lexema) > MAX_LONGITUD_IDENTIFICADOR) {
+		printf("Nombre de identificador '%s' demasiado largo.\nLongitud maxima permitida: %d\n", lexema, MAX_LONGITUD_IDENTIFICADOR);
+		yyerror();
+	}
+}
+
+void verificar_largo_constante_string (char *lexema){
+	if (strlen(lexema) > MAX_LONGITUD_CONSTANTE_STRING+2) {
+		printf("Constante String '%s' demasiado larga (%d bytes).\nLongitud maxima permitida: %d\n", lexema, strlen(lexema)-2, MAX_LONGITUD_CONSTANTE_STRING);
+		yyerror();
+	}
 }
 
