@@ -263,7 +263,7 @@ condicion_menor_igual : IDENTIFICADOR OP_MENOR_IGUAL exp_mat {
 %%
 int main (int argc, char *argv[]) 
 {
-	FILE *asmtxt = fopen ("asm.txt", "w");
+	FILE *asmtxt = fopen ("Final.asm", "w");
 	if ((yyin = fopen(argv[1], "rt")) == NULL)
 	{
 		printf("\n No se puede abrir el archivo: %s\n", argv[1]);

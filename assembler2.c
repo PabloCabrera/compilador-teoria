@@ -35,19 +35,22 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 				fprintf(file,"\tSAHF\n");
 			
 			} else if(son_iguales(polaca-> texto,"BLE")){
-				fprintf(file,"\tJLE %s\n",etiqueta_salto);
+				fprintf(file,"\tJBE %s\n",etiqueta_salto);
 				
 			} else if(son_iguales(polaca-> texto,"BNE")){
 				fprintf(file,"\tJNE %s\n",etiqueta_salto);
 				
 			} else if(son_iguales(polaca-> texto,"BGE")){
-				fprintf(file,"\tJGE %s\n",etiqueta_salto);
+				fprintf(file,"\tJAE %s\n",etiqueta_salto);
 			
 			} else if(son_iguales(polaca-> texto,"BLT")){
-				fprintf(file,"\tJL %s\n",etiqueta_salto);
+				fprintf(file,"\tJB %s\n",etiqueta_salto);
 			
 			} else if(son_iguales(polaca-> texto,"BGT")){
-				fprintf(file,"\tJG %s\n",etiqueta_salto);
+				fprintf(file,"\tJA %s\n",etiqueta_salto);
+
+			} else if(son_iguales(polaca-> texto,"BEQ")){
+				fprintf(file,"\tJE %s\n",etiqueta_salto);
 			}
 			break;
 		case ETIQUETA:
@@ -108,7 +111,7 @@ void crearDataAssembler(struct ts_entrada* tabla, FILE* fichero){
 						//si no tiene valor
 						fprintf(fichero,"? ");
 					}else{
-						fprintf(fichero,"%s,\"$\" ",tabla[i].valor);
+						fprintf(fichero,"%s,10, 13, \"$\" ",tabla[i].valor);
 					}
 					break;
 				default: //si es float u otra cosa
