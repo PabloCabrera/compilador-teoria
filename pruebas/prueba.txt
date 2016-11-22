@@ -1,0 +1,55 @@
+DECVAR
+	contador: Integer;
+	promedio: Float;
+	actual, suma: Float;
+	palabra, sinonimo: String;
+ENDDEC
+
+write "Hola mundo!";
+contador: 0;
+
+actual: 1.5;
+suma: 0;
+contador: contador+1;
+while (contador <= 92) {
+	contador: contador + 1;
+	actual: (contador/0.342) + (contador*contador);
+	suma: suma + actual;
+	promedio: avg([5]);
+	promedio: avg([5,3]);
+	promedio: avg([3,actual]);
+	promedio: avg([3,3*4,12,actual,actual*2, actual*actual]);
+
+}
+
+write "La suma es: ";
+
+if (actual > 2){
+	write "2 > 3";
+}
+
+if (actual < 3){
+	if(actual >= 3){
+		write "soy true";
+	}
+	if(actual <= 3){
+		write "soy true";
+	}
+	if(actual != 3){
+		write "soy true";
+	}
+	if(actual == 3){
+		write "soy true";
+	}
+
+}else{
+	actual:333.3333;
+}
+
+-/hola mundo/-
+
+-/
+hola 
+mundo 
++ - / , .
+/-
