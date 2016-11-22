@@ -1,5 +1,7 @@
+#include <stdlib.h>
 #define son_iguales(x, y) (strcmp((x),(y))==0)
 void escribir_asm (PolacaInversa polaca, FILE *file);
+bool tipo_anterior_string;
 char *etiqueta_salto, *variable_asignacion;
 void escribir_asm (PolacaInversa polaca, FILE *file) {
 	
@@ -18,8 +20,12 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 				fprintf(file, "\tFDIV\n" );
 				
 			} else if (son_iguales(polaca-> texto, ":")) {
-				fprintf(file, "\tFSTP %s\n", variable_asignacion );
-				
+				if(tipo_anterior_string ==1){
+					fprintf(file, "\t mov %s, DX \n",variable_asignacion);
+				}else{
+					fprintf(file, "\tFSTP %s\n", variable_asignacion );
+				}
+								
 			} else if (son_iguales(polaca-> texto, "write")) {
 				fprintf(file, "\tMOV AH, 9\n" );
 				fprintf(file, "\tINT 21H\n" );
@@ -35,19 +41,22 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 				fprintf(file,"\tSAHF\n");
 			
 			} else if(son_iguales(polaca-> texto,"BLE")){
-				fprintf(file,"\tJLE %s\n",etiqueta_salto);
+				fprintf(file,"\tJBE %s\n",etiqueta_salto);
 				
 			} else if(son_iguales(polaca-> texto,"BNE")){
 				fprintf(file,"\tJNE %s\n",etiqueta_salto);
 				
 			} else if(son_iguales(polaca-> texto,"BGE")){
-				fprintf(file,"\tJGE %s\n",etiqueta_salto);
+				fprintf(file,"\tJAE %s\n",etiqueta_salto);
 			
 			} else if(son_iguales(polaca-> texto,"BLT")){
-				fprintf(file,"\tJL %s\n",etiqueta_salto);
+				fprintf(file,"\tJB %s\n",etiqueta_salto);
 			
 			} else if(son_iguales(polaca-> texto,"BGT")){
-				fprintf(file,"\tJG %s\n",etiqueta_salto);
+				fprintf(file,"\tJA %s\n",etiqueta_salto);
+
+			} else if(son_iguales(polaca-> texto,"BEQ")){
+				fprintf(file,"\tJE %s\n",etiqueta_salto);
 			}
 			break;
 		case ETIQUETA:
@@ -57,6 +66,11 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 			etiqueta_salto = polaca -> texto;
 			break;
 		case SIMBOLO:
+			if(polaca->simbolo != NULL && polaca-> simbolo ->tipo == STRING ){
+				tipo_anterior_string= 1;
+			}else{
+				tipo_anterior_string=0;
+			}
 			if(
 				/* Si el siguiente elemento es un operador de asignacion */
 				(polaca-> siguiente != NULL)
@@ -103,12 +117,14 @@ void crearDataAssembler(struct ts_entrada* tabla, FILE* fichero){
 					}
 					break;
 				case 3:	//si es string
-					fprintf(fichero,"db ");
+					
 					if( strcmp(tabla[i].valor,"-")==0 ){
 						//si no tiene valor
+						fprintf(fichero,"dw ");
 						fprintf(fichero,"? ");
 					}else{
-						fprintf(fichero,"%s,\"$\" ",tabla[i].valor);
+						fprintf(fichero,"db ");
+						fprintf(fichero,"%s,10, 13, \"$\" ",tabla[i].valor);
 					}
 					break;
 				default: //si es float u otra cosa

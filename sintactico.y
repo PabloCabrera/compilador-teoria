@@ -143,6 +143,11 @@ sent_write : RESERVADA_WRITE CONSTANTE_STRING FIN_SENTENCIA{
 	insertar_operador_polaca("write");
 };
 
+sent_write : RESERVADA_WRITE IDENTIFICADOR FIN_SENTENCIA{
+	insertar_simbolo_polaca(ts_buscar_identificador($2));
+	insertar_operador_polaca("write");
+};
+
 sent_if_else : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_if_else();} RESERVADA_ELSE INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_else();};
 sent_if : RESERVADA_IF INICIO_PARENTESIS condicion FIN_PARENTESIS INICIO_BLOQUE list_sentencias FIN_BLOQUE {fin_if();};
 
@@ -263,7 +268,7 @@ condicion_menor_igual : IDENTIFICADOR OP_MENOR_IGUAL exp_mat {
 %%
 int main (int argc, char *argv[]) 
 {
-	FILE *asmtxt = fopen ("asm.txt", "w");
+	FILE *asmtxt = fopen ("Final.asm", "w");
 	if ((yyin = fopen(argv[1], "rt")) == NULL)
 	{
 		printf("\n No se puede abrir el archivo: %s\n", argv[1]);
@@ -272,6 +277,8 @@ int main (int argc, char *argv[])
 	{	
 		yyparse();
 		ts_escribir_html("tabla_simbolos.html");
+		fprintf(asmtxt, "include macros2.asm\n");
+		fprintf(asmtxt, "include number.asm\n"); 
 		crearDataAssembler(ts_tabla_simbolos,asmtxt);
 		escribir_asm (polaca_actual, asmtxt);
 		fprintf(asmtxt, "\tMOV AH, 4Ch\n");

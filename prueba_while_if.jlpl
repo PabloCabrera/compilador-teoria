@@ -3,14 +3,14 @@ DECVAR
 	w,x,y,z,limite : Integer;
 ENDDEC
 
-maximas_repeticiones : 20;
+maximas_repeticiones : 1;
 contador : 0;
 
 write "esta es un while varios ifs anidados";
 write "   ";
 
 while (contador<maximas_repeticiones){
-	if(contador==1){
+	if(contador==0){
 		write "soy la primer iteracion!";
 	}else{
 		if(contador<(maximas_repeticiones/2)){
@@ -46,7 +46,7 @@ w:1;
 x:1;
 y:1;
 z:1;
-limite: 3;
+limite: 2;
 while(w<limite){
 	write "w";
 	while(x<limite){

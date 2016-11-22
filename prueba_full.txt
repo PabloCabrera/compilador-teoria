@@ -1,0 +1,87 @@
+DECVAR
+	lado1: Float;
+	lado2: Float;
+	lado3: Float;
+	promedio: Float;
+ENDDEC
+
+lado1: 3;
+lado2: 2;
+
+if (lado1 < lado2) {
+	write "lado 1 es menor a lado 2 ";
+}
+
+if (lado1 > lado2) {
+	write "lado 1 es mayor a lado 2 ";
+}
+
+if (lado1 <= lado2) {
+	write "lado 1 es menor o igual a lado 2 ";
+}
+
+if (lado1 >= lado2) {
+	write "lado 1 es mayor o igual a lado 2 ";
+}
+
+if (lado1 != lado2) {
+	write "lado 1 es distinto a lado 2 ";
+}
+
+if (lado1 == lado2) {
+	write "lado 1 es igual a lado 2 ";
+}
+
+lado1: 1;
+lado2: 2;
+
+if (lado1 < lado2) {
+	write "lado 1 es menor a lado 2 ";
+}
+
+if (lado1 > lado2) {
+	write "lado 1 es mayor a lado 2 ";
+}
+
+if (lado1 <= lado2) {
+	write "lado 1 es menor o igual a lado 2 ";
+}
+
+if (lado1 >= lado2) {
+	write "lado 1 es mayor o igual a lado 2 ";
+}
+
+if (lado1 != lado2) {
+	write "lado 1 es distinto a lado 2 ";
+}
+
+if (lado1 == lado2) {
+	write "lado 1 es igual a lado 2 ";
+}
+
+lado1: 2;
+lado2: 2;
+
+if (lado1 < lado2) {
+	write "lado 1 es menor a lado 2 ";
+}
+
+if (lado1 > lado2) {
+	write "lado 1 es mayor a lado 2 ";
+}
+
+if (lado1 <= lado2) {
+	write "lado 1 es menor o igual a lado 2 ";
+}
+
+if (lado1 >= lado2) {
+	write "lado 1 es mayor o igual a lado 2 ";
+}
+
+if (lado1 != lado2) {
+	write "lado 1 es distinto a lado 2 ";
+}
+
+if (lado1 == lado2) {
+	write "lado 1 es igual a lado 2 ";
+}
