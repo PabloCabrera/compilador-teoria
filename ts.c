@@ -98,6 +98,7 @@ void ts_guardar_simbolo(char *token, char *lexema){
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].valor,"-");
 			yylval.stringValue = ts_tabla_simbolos[ts_num_simbolos].nombre; 
 			ts_tabla_simbolos[ts_num_simbolos].longitud = TS_LONGITUD_NO_DEFINIDA;
+			ts_tabla_simbolos[ts_num_simbolos].constante = false;
 		}
 	
 		/* Si es una constante real guardo lexema y valor*/
@@ -116,6 +117,7 @@ void ts_guardar_simbolo(char *token, char *lexema){
 			ts_tabla_simbolos[ts_num_simbolos].tipo = FLOAT;
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].valor,lexema);
 			ts_tabla_simbolos[ts_num_simbolos].longitud = TS_LONGITUD_NO_DEFINIDA;
+			ts_tabla_simbolos[ts_num_simbolos].constante = true;
 			
 		}
 	
@@ -127,6 +129,7 @@ void ts_guardar_simbolo(char *token, char *lexema){
 			ts_tabla_simbolos[ts_num_simbolos].tipo = INTEGER;
 			strcpy(ts_tabla_simbolos[ts_num_simbolos].valor,lexema);
 			ts_tabla_simbolos[ts_num_simbolos].longitud = TS_LONGITUD_NO_DEFINIDA;
+			ts_tabla_simbolos[ts_num_simbolos].constante = true;
 		}
 	
 		/* Si es una constante string guardo lexema y longitud*/
@@ -148,6 +151,7 @@ void ts_guardar_simbolo(char *token, char *lexema){
 			}
 			destino[i] = '\0';
 			strcpy (ts_tabla_simbolos[ts_num_simbolos].nombre, destino);
+			ts_tabla_simbolos[ts_num_simbolos].constante = true;
 		}
 	
 		

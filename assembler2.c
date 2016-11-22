@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #define son_iguales(x, y) (strcmp((x),(y))==0)
 void escribir_asm (PolacaInversa polaca, FILE *file);
-bool tipo_anterior_string;
+bool tipo_anterior_string, anterior_es_identificador;
 char *etiqueta_salto, *variable_asignacion, *variable_write;
 void escribir_asm (PolacaInversa polaca, FILE *file) {
 	
@@ -21,14 +21,20 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 				
 			} else if (son_iguales(polaca-> texto, ":")) {
 				if(tipo_anterior_string ==1){
-					fprintf(file, "\t mov %s, DX \n",variable_asignacion);
+					fprintf(file, "\tMOV %s, DX \n",variable_asignacion);
 				}else{
 					fprintf(file, "\tFSTP %s\n", variable_asignacion );
 				}
 								
 			} else if (son_iguales(polaca-> texto, "write")) {
 				if (tipo_anterior_string) {
-					fprintf(file, "\tMOV DX,OFFSET %s\n", variable_write);	
+					if (anterior_es_identificador) {
+						/* Cuando el anterior es variable string */
+						fprintf(file, "\tMOV DX, %s\n", variable_write);	
+					} else {
+						/* Cuando el anterior es constante string */
+						fprintf(file, "\tMOV DX, OFFSET %s\n", variable_write);	
+					}
 					fprintf(file, "\tMOV AH, 9\n" );
 					fprintf(file, "\tINT 21H\n" );
 				} else {
@@ -77,6 +83,13 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 			}else{
 				tipo_anterior_string=0;
 			}
+
+			if(polaca-> simbolo && polaca-> simbolo -> constante == false){
+				anterior_es_identificador = 1;
+			} else {
+				anterior_es_identificador = 0;
+			}
+	
 			if(
 				/* Si el siguiente elemento es un operador de asignacion */
 				(polaca-> siguiente != NULL)
@@ -93,6 +106,9 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 			) {
 				/* Guardamos el nombre del simbolo en una variable auxiliar */
 				variable_write = polaca-> simbolo-> nombre;
+			} else if(polaca-> simbolo-> tipo == STRING) {
+				/* Si es un string, lo guardamos en DX */
+				fprintf(file, "\tMOV DX, OFFSET %s\n" , polaca -> simbolo -> nombre);
 			} else {
 				/* Sino lo apilamos en el coprocesador */
 				fprintf(file, "\tFLD %s\n" , polaca -> simbolo -> nombre);

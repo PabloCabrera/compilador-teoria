@@ -1,0 +1,20 @@
+decvar
+	nombre, apellido: string;
+	edad: integer;
+enddec
+
+nombre: "Jon";
+apellido: "Postel";
+edad: 45;
+
+Write " ";
+Write "Mi apellido es:";
+Write apellido;
+
+Write " ";
+Write "Mi nombre es:";
+Write nombre;
+
+Write " ";
+Write "Mi edad es:";
+Write edad;

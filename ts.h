@@ -19,6 +19,7 @@ struct ts_entrada {
         TipoDato tipo;
         char valor[512];
         int longitud;
+        bool constante;
 };
 
 void ts_guardar_simbolo(char *token, char *lexema);
