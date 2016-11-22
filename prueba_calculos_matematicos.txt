@@ -9,11 +9,19 @@ ENDDEC
 -/Calculo 1 devuelve 5 /-
 calculo1: (((5+4)-2)*2+1)/3;
 
+
 -/Calculo 2 devuelve 12/-
 calculo2: (5*2+14)/2;
+
 
 -/Calulo 3 devuelve 3/-
 calculo3: (2+2*6-8)/2;
 
+
 -/Resultado es el promedio de esas 3 variables/-
 resultado: avg([calculo1,calculo2,calculo3]);
+
+write calculo1;
+write calculo2;
+write calculo3;
+write resultado;

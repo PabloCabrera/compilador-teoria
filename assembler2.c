@@ -2,7 +2,7 @@
 #define son_iguales(x, y) (strcmp((x),(y))==0)
 void escribir_asm (PolacaInversa polaca, FILE *file);
 bool tipo_anterior_string;
-char *etiqueta_salto, *variable_asignacion;
+char *etiqueta_salto, *variable_asignacion, *variable_write;
 void escribir_asm (PolacaInversa polaca, FILE *file) {
 	
 	switch (polaca-> tipo) {
@@ -27,8 +27,13 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 				}
 								
 			} else if (son_iguales(polaca-> texto, "write")) {
-				fprintf(file, "\tMOV AH, 9\n" );
-				fprintf(file, "\tINT 21H\n" );
+				if (tipo_anterior_string) {
+					fprintf(file, "\tMOV AH, 9\n" );
+					fprintf(file, "\tINT 21H\n" );
+				} else {
+					fprintf (file, "\tDisplayFloat %s,2\n", variable_write);
+					fprintf (file, "\tNewLine\n", variable_write);
+				}
 
 			} else if (son_iguales(polaca-> texto, "BI")) {
 				fprintf(file,"\tJMP %s\n",etiqueta_salto);
@@ -79,6 +84,14 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 			) {
 				/* Guardamos el nombre del simbolo en una variable auxiliar */
 				variable_asignacion = polaca-> simbolo-> nombre;
+			} else if(
+				/* Si el siguiente elemento es un operador write */
+				(polaca-> siguiente != NULL)
+				&& (polaca-> siguiente-> tipo == OPERADOR)
+				&& (son_iguales(polaca-> siguiente->  texto, "write"))
+			) {
+				/* Guardamos el nombre del simbolo en una variable auxiliar */
+				variable_write = polaca-> simbolo-> nombre;
 			} else {
 				/* Sino lo apilamos en el coprocesador */
 				if (polaca-> simbolo -> tipo == STRING){
