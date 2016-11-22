@@ -21,7 +21,17 @@ calculo3: (2+2*6-8)/2;
 -/Resultado es el promedio de esas 3 variables/-
 resultado: avg([calculo1,calculo2,calculo3]);
 
+write "Resultado de calculo 1:";
 write calculo1;
+write " ";
+
+write "Resultado de calculo 2:";
 write calculo2;
+write " ";
+
+write "Resultado de calculo 3:";
 write calculo3;
+write " ";
+
+write "Promedio de los resultados:";
 write resultado;

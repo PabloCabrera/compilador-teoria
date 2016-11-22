@@ -28,6 +28,7 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 								
 			} else if (son_iguales(polaca-> texto, "write")) {
 				if (tipo_anterior_string) {
+					fprintf(file, "\tMOV DX,OFFSET %s\n", variable_write);	
 					fprintf(file, "\tMOV AH, 9\n" );
 					fprintf(file, "\tINT 21H\n" );
 				} else {
@@ -94,11 +95,7 @@ void escribir_asm (PolacaInversa polaca, FILE *file) {
 				variable_write = polaca-> simbolo-> nombre;
 			} else {
 				/* Sino lo apilamos en el coprocesador */
-				if (polaca-> simbolo -> tipo == STRING){
-					fprintf(file, "\tMOV DX,OFFSET %s\n", polaca-> simbolo-> nombre);	
-				} else {
-					fprintf(file, "\tFLD %s\n" , polaca -> simbolo -> nombre);
-				}
+				fprintf(file, "\tFLD %s\n" , polaca -> simbolo -> nombre);
 			}
 
 			break;
